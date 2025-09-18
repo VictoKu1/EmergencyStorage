@@ -1,0 +1,26 @@
+# EmergencyStorage - Storage directories to ignore
+# These directories contain large data files that should not be committed
+
+# Kiwix mirror data - can be GB to TB in size
+kiwix-mirror/
+
+# OpenStreetMap data - ~70GB+ planet data file
+openstreetmap/
+
+# Common temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
