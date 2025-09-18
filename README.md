@@ -29,27 +29,43 @@ Make the script executable:
 chmod +x emergency_storage.sh
 ```
 
-Run with desired source and target drive:
+**Simple Usage (Recommended):**
 ```bash
+# Download all sources to current directory (default behavior)
+./emergency_storage.sh
+
+# Download all sources to specific directory
+./emergency_storage.sh /mnt/external_drive
+```
+
+**Advanced Usage:**
+```bash
+# Specify sources explicitly
 ./emergency_storage.sh --[sources] [drive_address]
 ```
 
 ### Available Sources
 
+- `--all` - Download from all sources (default when no flags specified)
 - `--kiwix` - Download Kiwix mirror only
 - `--openstreetmap` - Download OpenStreetMap data only  
-- `--all` - Download from all sources
 
 ### Examples
 
 ```bash
-# Download Kiwix mirror to external drive
+# Simple: Download everything to current directory
+./emergency_storage.sh
+
+# Simple: Download everything to external drive
+./emergency_storage.sh /mnt/external_drive
+
+# Advanced: Download only Kiwix mirror to external drive
 ./emergency_storage.sh --kiwix /mnt/external_drive
 
-# Download OpenStreetMap data to external drive
+# Advanced: Download only OpenStreetMap data to external drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
 
-# Download everything to external drive
+# Advanced: Explicitly download everything to external drive
 ./emergency_storage.sh --all /mnt/external_drive
 
 # Show help

@@ -8,17 +8,22 @@ set -e  # Exit on any error
 
 # Function to display usage information
 show_usage() {
-    echo "Usage: $0 --[sources] [drive_address]"
+    echo "Usage: $0 [--sources] [drive_address]"
+    echo ""
+    echo "If no arguments are provided, defaults to downloading all sources to current directory."
+    echo "If only a directory path is provided, defaults to downloading all sources to that directory."
     echo ""
     echo "Sources:"
-    echo "  --all            Download from all sources"
+    echo "  --all            Download from all sources (default)"
     echo "  --kiwix          Download Kiwix mirror"
     echo "  --openstreetmap  Download OpenStreetMap data"
     echo ""
     echo "Examples:"
-    echo "  $0 --kiwix /mnt/external_drive"
-    echo "  $0 --openstreetmap /mnt/external_drive"
-    echo "  $0 --all /mnt/external_drive"
+    echo "  $0                                    # Download all to current directory"
+    echo "  $0 /mnt/external_drive               # Download all to specified directory"
+    echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
+    echo "  $0 --openstreetmap /mnt/external_drive # Download only OpenStreetMap"
+    echo "  $0 --all /mnt/external_drive         # Explicitly download all"
     echo ""
 }
 
@@ -111,11 +116,20 @@ download_all() {
 
 # Main script logic
 main() {
-    # Check if no arguments provided
+    # Default behavior: if no arguments, use --all with current directory
     if [ $# -eq 0 ]; then
-        echo "Error: No arguments provided"
-        show_usage
-        exit 1
+        echo "No arguments provided. Defaulting to download all sources to current directory."
+        validate_drive_path "."
+        download_all "."
+        return
+    fi
+    
+    # If only one argument and it doesn't start with --, treat it as a directory path with --all default
+    if [ $# -eq 1 ] && [[ "$1" != --* ]]; then
+        echo "Single directory argument provided. Defaulting to download all sources."
+        validate_drive_path "$1"
+        download_all "$1"
+        return
     fi
     
     # Parse command line arguments
