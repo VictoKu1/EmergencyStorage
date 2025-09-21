@@ -6,7 +6,11 @@ A project designed to run on Raspberry Pi (or Linux) with a connected HDD, provi
 
 - **Kiwix Mirror**: Downloads the complete Kiwix library mirror using rsync
 - **OpenStreetMap Data**: Downloads the latest planet OSM data file
-- **All Sources**: Downloads from both sources in sequence
+- **Internet Archive Software**: Downloads software preservation collections (games, applications, historical software)
+- **Internet Archive Music**: Downloads music collections (Creative Commons, public domain, live concerts)
+- **Internet Archive Movies**: Downloads movie collections (public domain films, documentaries, educational content)
+- **Internet Archive Texts**: Downloads scientific texts and academic papers (books, research papers, government documents)
+- **All Sources**: Downloads from all sources in sequence
 
 ## Prerequisites
 
@@ -48,7 +52,11 @@ chmod +x emergency_storage.sh
 
 - `--all` - Download from all sources (default when no flags specified)
 - `--kiwix` - Download Kiwix mirror only
-- `--openstreetmap` - Download OpenStreetMap data only  
+- `--openstreetmap` - Download OpenStreetMap data only
+- `--ia-software` - Download Internet Archive software collection only
+- `--ia-music` - Download Internet Archive music collection only
+- `--ia-movies` - Download Internet Archive movies collection only
+- `--ia-texts` - Download Internet Archive scientific texts only  
 
 ### Examples
 
@@ -65,6 +73,18 @@ chmod +x emergency_storage.sh
 # Advanced: Download only OpenStreetMap data to external drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
 
+# Advanced: Download only Internet Archive software to external drive  
+./emergency_storage.sh --ia-software /mnt/external_drive
+
+# Advanced: Download only Internet Archive music to external drive
+./emergency_storage.sh --ia-music /mnt/external_drive
+
+# Advanced: Download only Internet Archive movies to external drive
+./emergency_storage.sh --ia-movies /mnt/external_drive
+
+# Advanced: Download only Internet Archive texts to external drive
+./emergency_storage.sh --ia-texts /mnt/external_drive
+
 # Advanced: Explicitly download everything to external drive
 ./emergency_storage.sh --all /mnt/external_drive
 
@@ -76,7 +96,11 @@ chmod +x emergency_storage.sh
 
 - **Kiwix Mirror**: Varies (typically several GB to TB depending on content)
 - **OpenStreetMap Planet**: ~70GB+ (compressed PBF format)
-- **Recommended**: At least 100GB+ free space for comfortable operation
+- **Internet Archive Software**: 50GB - 500GB (depending on collections selected)
+- **Internet Archive Music**: 100GB - 1TB (depending on collections selected)
+- **Internet Archive Movies**: 500GB - 5TB (depending on collections selected)
+- **Internet Archive Texts**: 100GB - 2TB (depending on collections selected)
+- **Recommended**: At least 1TB+ free space for comfortable operation with all sources
 
 ## What Gets Downloaded
 
@@ -91,6 +115,39 @@ The script creates an `openstreetmap/` directory and downloads:
 ```
 https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf
 ```
+
+### Internet Archive Software
+The script creates an `internet-archive-software/` directory and downloads:
+- MS-DOS Games and Software
+- Windows 3.x Software Library
+- Historical Software Collections
+- Open Source Software
+- Console Living Room (Game Console Software)
+
+### Internet Archive Music  
+The script creates an `internet-archive-music/` directory and downloads:
+- Open Source Audio Collections
+- Community Audio
+- Net Labels
+- Live Concert Archive (etree.org)
+- Radio Programs
+- Audio Books & Poetry
+
+### Internet Archive Movies
+The script creates an `internet-archive-movies/` directory and downloads:
+- Prelinger Archives (industrial/educational films)
+- Classic TV Shows
+- Public Domain Feature Films
+- Animation Films
+- Documentaries
+
+### Internet Archive Texts
+The script creates an `internet-archive-texts/` directory and downloads:
+- Project Gutenberg (public domain books)
+- Biodiversity Heritage Library
+- Medical Heritage Library
+- Scientific Papers and Academic Texts
+- Government Documents
 
 ## Error Handling
 
