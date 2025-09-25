@@ -76,10 +76,44 @@ download_kiwix() {
         exit 1
     fi
     
-    echo "Downloading Kiwix mirror (this may take a long time)..."
-    rsync -vzrlptD --delete --info=progress2 master.download.kiwix.org::download.kiwix.org/ "$kiwix_path/"
+    # Define list of Kiwix mirrors to try (ordered by priority)
+    local mirrors=(
+        "master.download.kiwix.org::download.kiwix.org/"
+        "download.kiwix.org::download.kiwix.org/"  
+        "mirror.download.kiwix.org::download.kiwix.org/"
+        "ftp.nluug.nl::kiwix/"
+        "mirror.slitaz.org::kiwix/"
+    )
     
-    echo "Kiwix mirror download completed successfully!"
+    echo "Downloading Kiwix mirror (this may take a long time)..."
+    
+    local success=false
+    for mirror in "${mirrors[@]}"; do
+        echo "Trying mirror: $mirror"
+        
+        # Try rsync with timeout and connection test
+        if timeout 60 rsync --dry-run -v "$mirror" &>/dev/null; then
+            echo "Mirror $mirror is accessible, starting download..."
+            if rsync -vzrlptD --delete --info=progress2 "$mirror" "$kiwix_path/"; then
+                echo "Kiwix mirror download completed successfully from $mirror!"
+                success=true
+                break
+            else
+                echo "Warning: Download failed from $mirror, trying next mirror..."
+            fi
+        else
+            echo "Warning: Mirror $mirror is not accessible, trying next mirror..."
+        fi
+    done
+    
+    if [ "$success" = false ]; then
+        echo "Error: All Kiwix mirrors failed. Please check your internet connection."
+        echo "Available mirrors tried:"
+        for mirror in "${mirrors[@]}"; do
+            echo "  - $mirror"
+        done
+        exit 1
+    fi
 }
 
 # Function to download OpenStreetMap data
