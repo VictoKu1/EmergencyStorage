@@ -145,7 +145,7 @@ chmod +x emergency_storage.sh
 ## Storage Requirements
 
 - **Kiwix Mirror**: Usually +7TB for all ZIM files (typically several GB to TB depending on content)
-- **OpenZIM**: Varies (typically several GB to TB, includes Wikipedia and educational content)
+- **OpenZIM**: Usually +1TB for all files (typically several GB to TB, includes Wikipedia and educational content)
 - **OpenStreetMap Planet**: ~70GB+ (compressed PBF format)
 - **Internet Archive Software**: 50GB - 500GB (depending on collections selected)
 - **Internet Archive Music**: 100GB - 1TB (depending on collections selected)
