@@ -39,7 +39,8 @@ This modular design allows for:
 ## Prerequisites
 
 - Linux system (tested on Raspberry Pi)
-- Connected external drive with sufficient storage space
+- Connected external drive with sufficient storage space (Recommended 10TB-15TB or more)
+- Stable Connection (Using Ethernet Cable Highly Recommended)
 - Required tools:
   - `rsync` (for Kiwix mirror and OpenZIM)
   - `curl` (for OpenStreetMap download and Internet Archive collections)
@@ -143,7 +144,7 @@ chmod +x emergency_storage.sh
 
 ## Storage Requirements
 
-- **Kiwix Mirror**: Varies +7TB for all ZIM files (typically several GB to TB depending on content)
+- **Kiwix Mirror**: Usually +7TB for all ZIM files (typically several GB to TB depending on content)
 - **OpenZIM**: Varies (typically several GB to TB, includes Wikipedia and educational content)
 - **OpenStreetMap Planet**: ~70GB+ (compressed PBF format)
 - **Internet Archive Software**: 50GB - 500GB (depending on collections selected)
