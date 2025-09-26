@@ -8,7 +8,7 @@ set -e  # Exit on any error
 
 # Function to display usage information
 show_usage() {
-    echo "Usage: $0 [--sources] [drive_address]"
+    echo "Usage: $0 [--sources] [--allow_download_from_mirror] [drive_address]"
     echo ""
     echo "If no arguments are provided, defaults to downloading all sources to current directory."
     echo "If only a directory path is provided, defaults to downloading all sources to that directory."
@@ -22,13 +22,18 @@ show_usage() {
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
     echo ""
+    echo "Options:"
+    echo "  --allow_download_from_mirror  Allow downloading from alternative Kiwix mirrors"
+    echo "                                if master mirror fails (rsync → FTP → HTTP fallback)"
+    echo ""
     echo "Examples:"
     echo "  $0                                    # Download all to current directory"
     echo "  $0 /mnt/external_drive               # Download all to specified directory"
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
+    echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive  # Kiwix with mirror fallback"
+    echo "  $0 --all --allow_download_from_mirror /mnt/external_drive    # All sources with mirror fallback"
     echo "  $0 --openstreetmap /mnt/external_drive # Download only OpenStreetMap"
     echo "  $0 --ia-software /mnt/external_drive # Download only IA software"
-    echo "  $0 --all /mnt/external_drive         # Explicitly download all"
     echo ""
 }
 
@@ -61,6 +66,7 @@ validate_drive_path() {
 # Function to download Kiwix mirror
 download_kiwix() {
     local drive_path="$1"
+    local allow_mirrors="$2"
     local kiwix_path="$drive_path/kiwix-mirror"
     
     echo "Starting Kiwix mirror download..."
@@ -76,42 +82,161 @@ download_kiwix() {
         exit 1
     fi
     
-    # Define list of Kiwix mirrors to try (ordered by priority)
-    local mirrors=(
-        "master.download.kiwix.org::download.kiwix.org/"
-        "download.kiwix.org::download.kiwix.org/"  
-        "mirror.download.kiwix.org::download.kiwix.org/"
-        "ftp.nluug.nl::kiwix/"
-        "mirror.slitaz.org::kiwix/"
-    )
-    
     echo "Downloading Kiwix mirror (this may take a long time)..."
     
+    # Try master mirror first
+    echo "Trying master mirror: master.download.kiwix.org::download.kiwix.org/"
+    if timeout 60 rsync --dry-run -v "master.download.kiwix.org::download.kiwix.org/" &>/dev/null; then
+        echo "Master mirror is accessible, starting download..."
+        if rsync -vzrlptD --delete --info=progress2 "master.download.kiwix.org::download.kiwix.org/" "$kiwix_path/"; then
+            echo "Kiwix mirror download completed successfully from master mirror!"
+            return 0
+        else
+            echo "Warning: Download failed from master mirror."
+        fi
+    else
+        echo "Warning: Master mirror is not accessible."
+    fi
+    
+    # If master fails and mirrors are not allowed, exit
+    if [ "$allow_mirrors" != "true" ]; then
+        echo "Error: Master Kiwix mirror failed and mirror downloads are not enabled."
+        echo "To use alternative mirrors, run with --allow_download_from_mirror flag:"
+        echo "  $0 --kiwix --allow_download_from_mirror /path/to/destination"
+        exit 1
+    fi
+    
+    # Try mirror sources in priority order: rsync -> FTP -> HTTP
+    echo "Master mirror failed, trying alternative mirrors..."
+    
+    # rsync mirrors (highest priority)
+    local rsync_mirrors=(
+        "ftp.fau.de/kiwix/"
+        "mirror-sites-fr.mblibrary.info/download.kiwix.org/"
+        "ftp.mirrorservice.org/download.kiwix.org/"
+        "ftp.nluug.nl/kiwix/"
+        "mirror.accum.se/mirror/kiwix.org/"
+        "mirror-sites-ca.mblibrary.info/download.kiwix.org/"
+        "wi.mirror.driftle.ss/kiwix/"
+        "ny.mirror.driftle.ss/kiwix/"
+        "mirror.triplebit.org/download.kiwix.org/"
+        "ftpmirror.your.org/pub/kiwix/"
+        "mirrors.dotsrc.org/kiwix/"
+        "rsyncd-service/self.download.kiwix.org/"
+        "md.mirrors.hacktegic.com/kiwix-md/"
+        "mirror-sites-in.mblibrary.info/download.kiwix.org/"
+    )
+    
+    echo "Trying rsync mirrors..."
     local success=false
-    for mirror in "${mirrors[@]}"; do
-        echo "Trying mirror: $mirror"
-        
-        # Try rsync with timeout and connection test
+    for mirror in "${rsync_mirrors[@]}"; do
+        echo "Trying rsync mirror: $mirror"
         if timeout 60 rsync --dry-run -v "$mirror" &>/dev/null; then
-            echo "Mirror $mirror is accessible, starting download..."
+            echo "Rsync mirror $mirror is accessible, starting download..."
             if rsync -vzrlptD --delete --info=progress2 "$mirror" "$kiwix_path/"; then
-                echo "Kiwix mirror download completed successfully from $mirror!"
+                echo "Kiwix mirror download completed successfully from rsync mirror: $mirror"
                 success=true
                 break
             else
-                echo "Warning: Download failed from $mirror, trying next mirror..."
+                echo "Warning: Download failed from rsync mirror $mirror"
             fi
         else
-            echo "Warning: Mirror $mirror is not accessible, trying next mirror..."
+            echo "Warning: Rsync mirror $mirror is not accessible"
+        fi
+    done
+    
+    if [ "$success" = true ]; then
+        return 0
+    fi
+    
+    # Check if curl is available for FTP/HTTP fallback
+    if ! command -v curl &> /dev/null; then
+        echo "Error: All rsync mirrors failed and curl is not available for FTP/HTTP fallback"
+        echo "Please install curl: sudo apt-get install curl"
+        exit 1
+    fi
+    
+    # FTP mirrors (medium priority)
+    local ftp_mirrors=(
+        "ftp://ftp.fau.de/kiwix/"
+        "ftp://ftp.mirrorservice.org/sites/download.kiwix.org/"
+        "ftp://ftp.nluug.nl/pub/kiwix/"
+        "ftp://mirror.accum.se/mirror/kiwix.org/"
+        "ftp://ftpmirror.your.org/pub/kiwix/"
+        "ftp://mirrors.dotsrc.org/kiwix/"
+        "ftp://mirror.download.kiwix.org/"
+    )
+    
+    echo "Rsync mirrors failed, trying FTP mirrors..."
+    for mirror in "${ftp_mirrors[@]}"; do
+        echo "Trying FTP mirror: $mirror"
+        if timeout 60 curl -s --connect-timeout 30 "$mirror" > /dev/null 2>&1; then
+            echo "FTP mirror $mirror is accessible, starting download..."
+            # Use wget for recursive FTP download if available, otherwise use curl
+            if command -v wget &> /dev/null; then
+                if wget -r -np -nH --cut-dirs=1 -P "$kiwix_path" "$mirror"; then
+                    echo "Kiwix mirror download completed successfully from FTP mirror: $mirror"
+                    success=true
+                    break
+                else
+                    echo "Warning: Download failed from FTP mirror $mirror"
+                fi
+            else
+                echo "Warning: wget not available for FTP recursive download, skipping FTP mirror $mirror"
+            fi
+        else
+            echo "Warning: FTP mirror $mirror is not accessible"
+        fi
+    done
+    
+    if [ "$success" = true ]; then
+        return 0
+    fi
+    
+    # HTTP mirrors (lowest priority)
+    local http_mirrors=(
+        "https://ftp.fau.de/kiwix/"
+        "https://mirror-sites-fr.mblibrary.info/mirror-sites/download.kiwix.org/"
+        "https://www.mirrorservice.org/sites/download.kiwix.org/"
+        "https://ftp.nluug.nl/pub/kiwix/"
+        "https://mirror.accum.se/mirror/kiwix.org/"
+        "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/"
+        "https://wi.mirror.driftle.ss/kiwix/"
+        "https://ny.mirror.driftle.ss/kiwix/"
+        "https://mirror.triplebit.org/download.kiwix.org/"
+        "https://ftpmirror.your.org/pub/kiwix/"
+        "https://mirrors.dotsrc.org/kiwix/"
+        "https://mirror.download.kiwix.org/"
+        "https://mirror.isoc.org.il/pub/kiwix/"
+        "https://md.mirrors.hacktegic.com/kiwix-md/"
+        "https://dumps.wikimedia.org/kiwix/"
+        "https://mirror-sites-in.mblibrary.info/mirror-sites/download.kiwix.org/"
+    )
+    
+    echo "FTP mirrors failed, trying HTTP mirrors..."
+    for mirror in "${http_mirrors[@]}"; do
+        echo "Trying HTTP mirror: $mirror"
+        if timeout 60 curl -s --connect-timeout 30 "$mirror" > /dev/null 2>&1; then
+            echo "HTTP mirror $mirror is accessible, starting download..."
+            if command -v wget &> /dev/null; then
+                if wget -r -np -nH --cut-dirs=1 -P "$kiwix_path" "$mirror"; then
+                    echo "Kiwix mirror download completed successfully from HTTP mirror: $mirror"
+                    success=true
+                    break
+                else
+                    echo "Warning: Download failed from HTTP mirror $mirror"
+                fi
+            else
+                echo "Warning: wget not available for HTTP recursive download, skipping HTTP mirror $mirror"
+            fi
+        else
+            echo "Warning: HTTP mirror $mirror is not accessible"
         fi
     done
     
     if [ "$success" = false ]; then
-        echo "Error: All Kiwix mirrors failed. Please check your internet connection."
-        echo "Available mirrors tried:"
-        for mirror in "${mirrors[@]}"; do
-            echo "  - $mirror"
-        done
+        echo "Error: All Kiwix mirrors failed (master, rsync, FTP, and HTTP)."
+        echo "Please check your internet connection and try again later."
         exit 1
     fi
 }
@@ -478,9 +603,10 @@ EOF
 # Function to download all sources
 download_all() {
     local drive_path="$1"
+    local allow_mirrors="$2"
     
     echo "Downloading from all sources..."
-    download_kiwix "$drive_path"
+    download_kiwix "$drive_path" "$allow_mirrors"
     download_openstreetmap "$drive_path"
     download_ia_software "$drive_path"
     download_ia_music "$drive_path"
@@ -491,93 +617,98 @@ download_all() {
 
 # Main script logic
 main() {
+    local allow_mirrors="false"
+    local source=""
+    local drive_path=""
+    
+    # Parse arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --allow_download_from_mirror)
+                allow_mirrors="true"
+                shift
+                ;;
+            --all|--kiwix|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts)
+                if [ -n "$source" ]; then
+                    echo "Error: Multiple source options specified"
+                    show_usage
+                    exit 1
+                fi
+                source="$1"
+                shift
+                ;;
+            --help|-h)
+                show_usage
+                exit 0
+                ;;
+            --*)
+                echo "Error: Unknown option $1"
+                show_usage
+                exit 1
+                ;;
+            *)
+                if [ -n "$drive_path" ]; then
+                    echo "Error: Multiple drive paths specified"
+                    show_usage
+                    exit 1
+                fi
+                drive_path="$1"
+                shift
+                ;;
+        esac
+    done
+    
     # Default behavior: if no arguments, use --all with current directory
-    if [ $# -eq 0 ]; then
+    if [ -z "$source" ] && [ -z "$drive_path" ]; then
         echo "No arguments provided. Defaulting to download all sources to current directory."
         validate_drive_path "."
-        download_all "."
+        download_all "." "$allow_mirrors"
         return
     fi
     
-    # If only one argument and it doesn't start with --, treat it as a directory path with --all default
-    if [ $# -eq 1 ] && [[ "$1" != --* ]]; then
+    # If only drive path provided, default to --all
+    if [ -z "$source" ] && [ -n "$drive_path" ]; then
         echo "Single directory argument provided. Defaulting to download all sources."
-        validate_drive_path "$1"
-        download_all "$1"
+        validate_drive_path "$drive_path"
+        download_all "$drive_path" "$allow_mirrors"
         return
     fi
     
-    # Parse command line arguments
-    case "$1" in
+    # If source provided but no drive path, error
+    if [ -n "$source" ] && [ -z "$drive_path" ]; then
+        echo "Error: Drive address is required for $source option"
+        show_usage
+        exit 1
+    fi
+    
+    # Validate drive path
+    validate_drive_path "$drive_path"
+    
+    # Execute the appropriate download function
+    case "$source" in
         --kiwix)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --kiwix option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_kiwix "$2"
+            download_kiwix "$drive_path" "$allow_mirrors"
             ;;
         --openstreetmap)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --openstreetmap option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_openstreetmap "$2"
+            download_openstreetmap "$drive_path"
             ;;
         --all)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --all option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_all "$2"
+            download_all "$drive_path" "$allow_mirrors"
             ;;
         --ia-software)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --ia-software option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_ia_software "$2"
+            download_ia_software "$drive_path"
             ;;
         --ia-music)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --ia-music option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_ia_music "$2"
+            download_ia_music "$drive_path"
             ;;
         --ia-movies)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --ia-movies option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_ia_movies "$2"
+            download_ia_movies "$drive_path"
             ;;
         --ia-texts)
-            if [ $# -ne 2 ]; then
-                echo "Error: Drive address is required for --ia-texts option"
-                show_usage
-                exit 1
-            fi
-            validate_drive_path "$2"
-            download_ia_texts "$2"
-            ;;
-        --help|-h)
-            show_usage
-            exit 0
+            download_ia_texts "$drive_path"
             ;;
         *)
-            echo "Error: Unknown option $1"
+            echo "Error: Invalid source option $source"
             show_usage
             exit 1
             ;;
