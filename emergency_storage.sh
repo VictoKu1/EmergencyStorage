@@ -16,6 +16,7 @@ show_usage() {
     echo "Sources:"
     echo "  --all            Download from all sources (default)"
     echo "  --kiwix          Download Kiwix mirror"
+    echo "  --openzim        Download OpenZIM files"
     echo "  --openstreetmap  Download OpenStreetMap data"
     echo "  --ia-software    Download Internet Archive software collection"
     echo "  --ia-music       Download Internet Archive music collection"
@@ -30,6 +31,7 @@ show_usage() {
     echo "  $0                                    # Download all to current directory"
     echo "  $0 /mnt/external_drive               # Download all to specified directory"
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
+    echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive  # Kiwix with mirror fallback"
     echo "  $0 --all --allow_download_from_mirror /mnt/external_drive    # All sources with mirror fallback"
     echo "  $0 --openstreetmap /mnt/external_drive # Download only OpenStreetMap"
@@ -600,6 +602,30 @@ EOF
     echo "Internet Archive scientific texts collection setup completed!"
 }
 
+# Function to download OpenZIM files
+download_openzim() {
+    local drive_path="$1"
+    local openzim_path="$drive_path/openzim"
+    
+    echo "Starting OpenZIM download..."
+    echo "Target directory: $openzim_path"
+    
+    # Create openzim directory
+    mkdir -p "$openzim_path"
+    
+    # Check if rsync is available
+    if ! command -v rsync &> /dev/null; then
+        echo "Error: rsync is required but not installed"
+        echo "Please install rsync: sudo apt-get install rsync"
+        exit 1
+    fi
+    
+    echo "Downloading OpenZIM files (this may take a very long time)..."
+    rsync -vzrlptD --delete --info=progress2 download.openzim.org::download.openzim.org/ "$openzim_path/"
+    
+    echo "OpenZIM download completed successfully!"
+}
+
 # Function to download all sources
 download_all() {
     local drive_path="$1"
@@ -607,6 +633,7 @@ download_all() {
     
     echo "Downloading from all sources..."
     download_kiwix "$drive_path" "$allow_mirrors"
+    download_openzim "$drive_path"
     download_openstreetmap "$drive_path"
     download_ia_software "$drive_path"
     download_ia_music "$drive_path"
@@ -628,7 +655,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts)
                 if [ -n "$source" ]; then
                     echo "Error: Multiple source options specified"
                     show_usage
@@ -688,6 +715,9 @@ main() {
     case "$source" in
         --kiwix)
             download_kiwix "$drive_path" "$allow_mirrors"
+            ;;
+        --openzim)
+            download_openzim "$drive_path"
             ;;
         --openstreetmap)
             download_openstreetmap "$drive_path"
