@@ -5,6 +5,7 @@ A project designed to run on Raspberry Pi (or Linux) with a connected HDD, provi
 ## Features
 
 - **Kiwix Mirror**: Downloads the complete Kiwix library mirror using rsync
+- **OpenZIM**: Downloads ZIM files from OpenZIM containing offline content (Wikipedia, educational content, etc.)
 - **OpenStreetMap Data**: Downloads the latest planet OSM data file
 - **Internet Archive Software**: Downloads software preservation collections (games, applications, historical software)
 - **Internet Archive Music**: Downloads music collections (Creative Commons, public domain, live concerts)
@@ -17,7 +18,7 @@ A project designed to run on Raspberry Pi (or Linux) with a connected HDD, provi
 - Linux system (tested on Raspberry Pi)
 - Connected external drive with sufficient storage space
 - Required tools:
-  - `rsync` (for Kiwix mirror)
+  - `rsync` (for Kiwix mirror and OpenZIM)
   - `curl` (for OpenStreetMap download)
 
 Install dependencies on Debian/Ubuntu:
@@ -52,6 +53,7 @@ chmod +x emergency_storage.sh
 
 - `--all` - Download from all sources (default when no flags specified)
 - `--kiwix` - Download Kiwix mirror only
+- `--openzim` - Download OpenZIM files only
 - `--openstreetmap` - Download OpenStreetMap data only
 - `--ia-software` - Download Internet Archive software collection only
 - `--ia-music` - Download Internet Archive music collection only
@@ -69,6 +71,9 @@ chmod +x emergency_storage.sh
 
 # Advanced: Download only Kiwix mirror to external drive
 ./emergency_storage.sh --kiwix /mnt/external_drive
+
+# Advanced: Download only OpenZIM files to external drive
+./emergency_storage.sh --openzim /mnt/external_drive
 
 # Advanced: Download only OpenStreetMap data to external drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
@@ -95,6 +100,7 @@ chmod +x emergency_storage.sh
 ## Storage Requirements
 
 - **Kiwix Mirror**: Varies (typically several GB to TB depending on content)
+- **OpenZIM**: Varies (typically several GB to TB, includes Wikipedia and educational content)
 - **OpenStreetMap Planet**: ~70GB+ (compressed PBF format)
 - **Internet Archive Software**: 50GB - 500GB (depending on collections selected)
 - **Internet Archive Music**: 100GB - 1TB (depending on collections selected)
@@ -109,6 +115,13 @@ The script creates a `kiwix-mirror/` directory and syncs content from:
 ```
 master.download.kiwix.org::download.kiwix.org/
 ```
+
+### OpenZIM
+The script creates an `openzim/` directory and syncs content from:
+```
+download.openzim.org::download.openzim.org/
+```
+This includes ZIM files containing offline content such as Wikipedia, educational materials, and other reference content in compressed format.
 
 ### OpenStreetMap
 The script creates an `openstreetmap/` directory and downloads:
