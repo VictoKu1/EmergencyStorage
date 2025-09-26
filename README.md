@@ -230,67 +230,35 @@ EmergencyStorage/
 
 ### Adding New Data Sources
 
-EmergencyStorage provides a comprehensive template system to make adding new data sources easy and consistent. The `new_resource.sh` template includes everything you need to implement a new data source without understanding the entire codebase structure.
+EmergencyStorage provides a comprehensive template system for adding new data sources easily and consistently. The `new_resource.sh` template includes everything needed to implement a new data source without understanding the entire codebase structure.
 
-#### Quick Start with Template
+#### Quick Start
 
-1. **Copy the template:**
+1. **Copy and customize the template:**
    ```bash
    cp new_resource.sh scripts/my-data-source.sh
    ```
 
-2. **Replace placeholder names:**
-   - Replace all instances of `NEW_RESOURCE` with your resource display name (e.g., "Weather Data")
-   - Replace all instances of `new_resource` with your resource identifier (e.g., "weather-data")
-   - Replace all instances of `download_new_resource` with your function name (e.g., "download_weather_data")
+2. **Follow the CUSTOMIZE: comments** in the template file
 
-3. **Customize the template:**
-   - Follow the `CUSTOMIZE:` comments throughout the file
-   - Update URLs, collections, sizes, and descriptions for your data source
-   - Implement your specific download logic
+3. **Integrate with the main script** using the embedded integration guide
 
-4. **Integrate with main script:**
-   - The template includes a complete integration guide showing exactly what to add to `emergency_storage.sh`
-   - Follow the 7 integration steps embedded in the template
+4. **Test your implementation** independently and with the main script
 
-5. **Test your implementation:**
-   ```bash
-   # Test independently
-   ./scripts/my-data-source.sh /tmp/test
-   
-   # Test integrated
-   ./emergency_storage.sh --my-data-source /tmp/test
-   ```
+#### Complete Documentation
 
-#### Template Features
+**📖 For comprehensive instructions, examples, and best practices, see:**
+- **[`NEW_RESOURCE_README.md`](NEW_RESOURCE_README.md)** - Complete template documentation with:
+  - Detailed step-by-step guide
+  - Template features and customization points
+  - Integration guide with exact code snippets
+  - Testing procedures and troubleshooting
+  - Example implementations and best practices
+  - Template completion checklist
 
-The `new_resource.sh` template provides:
-
-- **Step-by-step integration guide** embedded directly in the file
-- **Structured placeholder sections** with clear customization points
-- **Built-in best practices** including error handling, logging, and validation
-- **Resource-specific configuration sections** for URLs, collections, and metadata
-- **Complete download workflow** with primary/backup source handling
-- **Comprehensive documentation generation**
-
-#### Detailed Documentation
-
-For comprehensive instructions, examples, and best practices, see:
-- **`NEW_RESOURCE_README.md`** - Complete template documentation
 - **`examples/research-papers.sh`** - Working example implementation
 
-#### Integration Points
-
-When adding a new data source to `emergency_storage.sh`, you'll need to update:
-1. Header comment (sources list)
-2. Usage display in `show_usage()` function
-3. Storage requirements display
-4. Download function wrapper
-5. Sources array in `download_all()` function
-6. Argument parsing options
-7. Source selection case statement
-
-The template provides exact line numbers and code snippets for each integration point.
+This detailed documentation contains everything you need to successfully add a new data source, including error handling patterns, integration points, and comprehensive testing procedures.
 
 ### Code Style Guidelines
 - Use `#!/bin/bash` shebang
@@ -316,10 +284,9 @@ We welcome contributions to EmergencyStorage! Whether you're fixing bugs, adding
 
 ##### Adding New Data Sources
 The easiest way to contribute a new data source:
-1. Use the `new_resource.sh` template system (see "Adding New Data Sources" above)
-2. Follow the integration guide embedded in the template
-3. Test thoroughly with various network conditions
-4. Submit a pull request with your new data source
+1. Use the `new_resource.sh` template system (see "Adding New Data Sources" above and **[`NEW_RESOURCE_README.md`](NEW_RESOURCE_README.md)** for complete guidance)
+2. Follow the integration guide and testing procedures
+3. Submit a pull request with your new data source
 
 ##### Improving Existing Features
 - Enhance download reliability and error handling
@@ -483,8 +450,8 @@ Weather data is crucial for emergency preparedness and disaster response.
 If you need help contributing:
 - **Issues**: Check existing issues for similar problems or questions
 - **Discussions**: Use GitHub Discussions for general questions
-- **Documentation**: Review the template system and existing scripts for examples
-- **Template**: Use `new_resource.sh` and `NEW_RESOURCE_README.md` for guidance
+- **Template Documentation**: See **[`NEW_RESOURCE_README.md`](NEW_RESOURCE_README.md)** for comprehensive guidance on adding new data sources
+- **Examples**: Review existing scripts in the `scripts/` directory and `examples/` folder
 
 ### Recognition
 
