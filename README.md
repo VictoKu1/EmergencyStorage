@@ -1,6 +1,6 @@
 # EmergencyStorage
 
-A modular project designed to run on Raspberry Pi (or Linux) with a connected HDD, providing scripts that download/mirror emergency data from multiple sources.
+A modular project designed to run on Raspberry Pi (or any other Linux PC) with a connected HDD, providing scripts that download/mirror emergency data from multiple sources.
 
 ## Architecture
 
