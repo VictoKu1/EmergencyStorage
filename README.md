@@ -1,17 +1,40 @@
 # EmergencyStorage
 
-A project designed to run on Raspberry Pi (or Linux) with a connected HDD, providing a script that downloads/mirrors emergency data from multiple sources.
+A modular project designed to run on Raspberry Pi (or Linux) with a connected HDD, providing scripts that download/mirror emergency data from multiple sources.
+
+## Architecture
+
+EmergencyStorage now uses a **modular architecture** with individual scripts for each data source:
+
+- **`emergency_storage.sh`** - Main coordinator script that calls individual source scripts
+- **`scripts/common.sh`** - Shared utility functions and colored logging system
+- **`scripts/kiwix.sh`** - Kiwix mirror download functionality
+- **`scripts/openzim.sh`** - OpenZIM files download functionality  
+- **`scripts/openstreetmap.sh`** - OpenStreetMap data download functionality
+- **`scripts/ia-software.sh`** - Internet Archive software collection
+- **`scripts/ia-music.sh`** - Internet Archive music collection
+- **`scripts/ia-movies.sh`** - Internet Archive movies collection
+- **`scripts/ia-texts.sh`** - Internet Archive texts/academic papers collection
+
+This modular design allows for:
+- **Better maintainability** - Each source has its own focused script
+- **Independent testing** - Individual scripts can be tested and debugged separately
+- **Professional code structure** - Clean separation of concerns
+- **Enhanced logging** - Colored output with consistent formatting
+- **Easier contributions** - Developers can work on individual components
 
 ## Features
 
-- **Kiwix Mirror**: Downloads the complete Kiwix library mirror using rsync
+- **Modular Architecture**: Each data source has its own specialized script for better maintainability
+- **Professional Logging**: Color-coded output with consistent formatting across all scripts
+- **Kiwix Mirror**: Downloads the complete Kiwix library mirror using rsync with fallback mirrors
 - **OpenZIM**: Downloads ZIM files from OpenZIM containing offline content (Wikipedia, educational content, etc.)
-- **OpenStreetMap Data**: Downloads the latest planet OSM data file
+- **OpenStreetMap Data**: Downloads the latest planet OSM data file (~70GB+)
 - **Internet Archive Software**: Downloads software preservation collections (games, applications, historical software)
 - **Internet Archive Music**: Downloads music collections (Creative Commons, public domain, live concerts)
 - **Internet Archive Movies**: Downloads movie collections (public domain films, documentaries, educational content)
 - **Internet Archive Texts**: Downloads scientific texts and academic papers (books, research papers, government documents)
-- **All Sources**: Downloads from all sources in sequence
+- **All Sources**: Downloads from all sources in sequence with error handling and reporting
 
 ## Prerequisites
 
@@ -19,15 +42,36 @@ A project designed to run on Raspberry Pi (or Linux) with a connected HDD, provi
 - Connected external drive with sufficient storage space
 - Required tools:
   - `rsync` (for Kiwix mirror and OpenZIM)
-  - `curl` (for OpenStreetMap download)
+  - `curl` (for OpenStreetMap download and Internet Archive collections)
+  - `wget` (optional, for HTTP/FTP mirror fallback)
 
 Install dependencies on Debian/Ubuntu:
 ```bash
 sudo apt-get update
-sudo apt-get install rsync curl
+sudo apt-get install rsync curl wget
 ```
 
-## Usage
+## Individual Script Usage
+
+Each data source can be downloaded independently using its dedicated script:
+
+```bash
+# Make scripts executable (if needed)
+chmod +x scripts/*.sh
+
+# Individual script usage examples
+./scripts/kiwix.sh /mnt/external_drive true        # Kiwix with mirror fallback
+./scripts/openzim.sh /mnt/external_drive           # OpenZIM files
+./scripts/openstreetmap.sh /mnt/external_drive     # OpenStreetMap data
+./scripts/ia-software.sh /mnt/external_drive       # IA Software collection
+./scripts/ia-music.sh /mnt/external_drive          # IA Music collection
+./scripts/ia-movies.sh /mnt/external_drive         # IA Movies collection
+./scripts/ia-texts.sh /mnt/external_drive          # IA Texts collection
+```
+
+## Main Script Usage
+
+The main `emergency_storage.sh` script coordinates all individual scripts and provides a unified interface:
 
 Make the script executable:
 ```bash
@@ -156,20 +200,79 @@ The script creates an `internet-archive-movies/` directory and downloads:
 
 ### Internet Archive Texts
 The script creates an `internet-archive-texts/` directory and downloads:
-- Project Gutenberg (public domain books)
-- Biodiversity Heritage Library
-- Medical Heritage Library
-- Scientific Papers and Academic Texts
-- Government Documents
+- Project Gutenberg (public domain literature)
+- Biodiversity Heritage Library (biological sciences)
+- Medical Heritage Library (historical medical texts)
+- Academic papers and research materials
+- Open access texts and technical documentation
+- Government documents (public domain)
+- Subject-specific collections (mathematics, physics, chemistry, biology, etc.)
 
-## Error Handling
+## Development and Contribution
 
-The script includes comprehensive error handling for:
-- Missing arguments
-- Invalid drive paths
-- Missing dependencies
-- Network connectivity issues
-- Insufficient permissions
+### Project Structure
+```
+EmergencyStorage/
+├── emergency_storage.sh          # Main coordinator script
+├── scripts/
+│   ├── common.sh                 # Shared utilities and logging
+│   ├── kiwix.sh                  # Kiwix mirror functionality
+│   ├── openzim.sh                # OpenZIM functionality
+│   ├── openstreetmap.sh          # OpenStreetMap functionality
+│   ├── ia-software.sh            # Internet Archive software
+│   ├── ia-music.sh               # Internet Archive music
+│   ├── ia-movies.sh              # Internet Archive movies
+│   └── ia-texts.sh               # Internet Archive texts
+├── README.md                     # This documentation
+└── LICENSE                       # MIT License
+```
+
+### Adding New Data Sources
+To add a new data source:
+
+1. Create a new script in the `scripts/` directory (e.g., `scripts/new-source.sh`)
+2. Follow the existing script pattern:
+   - Source `scripts/common.sh` for utilities
+   - Use the logging functions (`log_info`, `log_success`, `log_warning`, `log_error`)
+   - Validate the drive path using `validate_drive_path`
+   - Create comprehensive README files for the collection
+3. Add the new source to the main `emergency_storage.sh` script
+4. Update this README with information about the new source
+5. Test thoroughly before submitting a pull request
+
+### Code Style Guidelines
+- Use `#!/bin/bash` shebang
+- Include `set -e` for error handling
+- Source `scripts/common.sh` for utilities
+- Use consistent logging with color-coded output
+- Validate inputs and provide helpful error messages
+- Create informative README files for each collection
+- Add comprehensive comments explaining complex logic
+
+## Error Handling and Logging
+
+The refactored scripts include comprehensive error handling and professional logging:
+
+### Logging Features
+- **Color-coded output**: Different colors for info, success, warning, and error messages
+- **Consistent formatting**: All scripts use the same logging system from `scripts/common.sh`
+- **Progress reporting**: Clear indication of what each script is doing
+- **Error reporting**: Detailed error messages with suggestions for resolution
+
+### Error Handling
+- **Individual script failures**: Main script continues with other sources if one fails
+- **Network connectivity**: Graceful handling of internet connection issues
+- **Missing dependencies**: Clear messages about required tools
+- **Invalid paths**: Validation and creation of target directories
+- **Insufficient permissions**: Permission checks before attempting operations
+- **Mirror fallback**: Automatic fallback to alternative mirrors for Kiwix
+
+### Script Architecture Benefits
+- **Modularity**: Each script handles one specific data source
+- **Maintainability**: Easy to update individual components
+- **Testability**: Scripts can be tested independently
+- **Reusability**: Individual scripts can be used in other projects
+- **Professional structure**: Clean code organization with proper documentation
 
 ## License
 
