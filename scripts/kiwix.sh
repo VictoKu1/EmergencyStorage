@@ -18,6 +18,36 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "$SCRIPT_DIR/common.sh"
 
+# Path to mirrors JSON file
+MIRRORS_JSON="$SCRIPT_DIR/../data/mirrors/kiwix.json"
+
+# Function to load mirrors from JSON file
+load_mirrors_from_json() {
+    local protocol="$1"
+    local mirrors=()
+    
+    if [ -f "$MIRRORS_JSON" ]; then
+        # Use Python to parse JSON if available, otherwise fallback to hardcoded
+        if command -v python3 &> /dev/null; then
+            mapfile -t mirrors < <(python3 -c "
+import json
+import sys
+try:
+    with open('$MIRRORS_JSON', 'r') as f:
+        data = json.load(f)
+        mirrors = data.get('mirrors', {}).get('$protocol', [])
+        for mirror in mirrors:
+            print(mirror)
+except Exception:
+    sys.exit(1)
+" 2>/dev/null)
+        fi
+    fi
+    
+    # Return the array
+    printf '%s\n' "${mirrors[@]}"
+}
+
 # Function to download from master Kiwix mirror
 download_from_master() {
     local kiwix_path="$1"
@@ -44,22 +74,15 @@ download_from_master() {
 try_rsync_mirrors() {
     local kiwix_path="$1"
     
-    local rsync_mirrors=(
-        "ftp.fau.de/kiwix/"
-        "mirror-sites-fr.mblibrary.info/download.kiwix.org/"
-        "ftp.mirrorservice.org/download.kiwix.org/"
-        "ftp.nluug.nl/kiwix/"
-        "mirror.accum.se/mirror/kiwix.org/"
-        "mirror-sites-ca.mblibrary.info/download.kiwix.org/"
-        "wi.mirror.driftle.ss/kiwix/"
-        "ny.mirror.driftle.ss/kiwix/"
-        "mirror.triplebit.org/download.kiwix.org/"
-        "ftpmirror.your.org/pub/kiwix/"
-        "mirrors.dotsrc.org/kiwix/"
-        "rsyncd-service/self.download.kiwix.org/"
-        "md.mirrors.hacktegic.com/kiwix-md/"
-        "mirror-sites-in.mblibrary.info/download.kiwix.org/"
-    )
+    # Load mirrors from JSON file
+    local rsync_mirrors=()
+    mapfile -t rsync_mirrors < <(load_mirrors_from_json "rsync")
+    
+    # Check if mirrors were loaded
+    if [ ${#rsync_mirrors[@]} -eq 0 ]; then
+        log_error "Could not load RSYNC mirrors from JSON file"
+        return 1
+    fi
     
     log_info "Trying rsync mirrors..."
     
@@ -92,15 +115,15 @@ try_ftp_mirrors() {
         return 1
     fi
     
-    local ftp_mirrors=(
-        "ftp://ftp.fau.de/kiwix/"
-        "ftp://ftp.mirrorservice.org/sites/download.kiwix.org/"
-        "ftp://ftp.nluug.nl/pub/kiwix/"
-        "ftp://mirror.accum.se/mirror/kiwix.org/"
-        "ftp://ftpmirror.your.org/pub/kiwix/"
-        "ftp://mirrors.dotsrc.org/kiwix/"
-        "ftp://mirror.download.kiwix.org/"
-    )
+    # Load mirrors from JSON file
+    local ftp_mirrors=()
+    mapfile -t ftp_mirrors < <(load_mirrors_from_json "ftp")
+    
+    # Check if mirrors were loaded
+    if [ ${#ftp_mirrors[@]} -eq 0 ]; then
+        log_error "Could not load FTP mirrors from JSON file"
+        return 1
+    fi
     
     log_info "Rsync mirrors failed, trying FTP mirrors..."
     
@@ -133,24 +156,15 @@ try_ftp_mirrors() {
 try_http_mirrors() {
     local kiwix_path="$1"
     
-    local http_mirrors=(
-        "https://ftp.fau.de/kiwix/"
-        "https://mirror-sites-fr.mblibrary.info/mirror-sites/download.kiwix.org/"
-        "https://www.mirrorservice.org/sites/download.kiwix.org/"
-        "https://ftp.nluug.nl/pub/kiwix/"
-        "https://mirror.accum.se/mirror/kiwix.org/"
-        "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/"
-        "https://wi.mirror.driftle.ss/kiwix/"
-        "https://ny.mirror.driftle.ss/kiwix/"
-        "https://mirror.triplebit.org/download.kiwix.org/"
-        "https://ftpmirror.your.org/pub/kiwix/"
-        "https://mirrors.dotsrc.org/kiwix/"
-        "https://mirror.download.kiwix.org/"
-        "https://mirror.isoc.org.il/pub/kiwix/"
-        "https://md.mirrors.hacktegic.com/kiwix-md/"
-        "https://dumps.wikimedia.org/kiwix/"
-        "https://mirror-sites-in.mblibrary.info/mirror-sites/download.kiwix.org/"
-    )
+    # Load mirrors from JSON file
+    local http_mirrors=()
+    mapfile -t http_mirrors < <(load_mirrors_from_json "https")
+    
+    # Check if mirrors were loaded
+    if [ ${#http_mirrors[@]} -eq 0 ]; then
+        log_error "Could not load HTTPS mirrors from JSON file"
+        return 1
+    fi
     
     log_info "FTP mirrors failed, trying HTTP mirrors..."
     

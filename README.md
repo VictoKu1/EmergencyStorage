@@ -27,6 +27,7 @@ This modular design allows for:
 
 - **Modular Architecture**: Each data source has its own specialized script for better maintainability
 - **Professional Logging**: Color-coded output with consistent formatting across all scripts
+- **Dynamic Mirror Updates**: Automated mirror list updates every 24 hours via GitHub Actions for optimal reliability
 - **Kiwix Mirror**: Downloads the complete Kiwix library mirror using rsync with fallback mirrors
 - **OpenZIM**: Downloads ZIM files from OpenZIM containing offline content (Wikipedia, educational content, etc.)
 - **OpenStreetMap Data**: Downloads the latest planet OSM data file (~70GB+)
@@ -45,12 +46,32 @@ This modular design allows for:
   - `rsync` (for Kiwix mirror and OpenZIM)
   - `curl` (for OpenStreetMap download and Internet Archive collections)
   - `wget` (optional, for HTTP/FTP mirror fallback)
+  - `python3` (for dynamic mirror updates, optional but recommended)
 
 Install dependencies on Debian/Ubuntu:
 ```bash
 sudo apt-get update
-sudo apt-get install rsync curl wget
+sudo apt-get install rsync curl wget python3
 ```
+
+## Dynamic Mirror Management
+
+EmergencyStorage features an automated system that keeps mirror lists up-to-date:
+
+- **Automatic Updates**: Mirror lists are scraped from official sources and updated every 24 hours via GitHub Actions
+- **JSON Storage**: Mirrors are stored in `data/mirrors/kiwix.json` for easy inspection and manual editing
+- **Dynamic Loading**: Scripts load mirrors directly from the JSON file, ensuring always-current mirror lists
+- **Extensible Design**: The system is designed to support multiple data sources in the future
+
+### Manual Mirror Updates
+
+To manually update the Kiwix mirror list:
+
+```bash
+python3 scripts/update_mirrors.py
+```
+
+See `data/mirrors/README.md` for more information about the mirror management system.
 
 ## Individual Script Usage
 
@@ -223,7 +244,15 @@ EmergencyStorage/
 │   ├── ia-software.sh            # Internet Archive software
 │   ├── ia-music.sh               # Internet Archive music
 │   ├── ia-movies.sh              # Internet Archive movies
-│   └── ia-texts.sh               # Internet Archive texts
+│   ├── ia-texts.sh               # Internet Archive texts
+│   └── update_mirrors.py         # Dynamic mirror scraper script
+├── data/
+│   └── mirrors/
+│       ├── kiwix.json            # Kiwix mirror list (auto-updated)
+│       └── README.md             # Mirror system documentation
+├── .github/
+│   └── workflows/
+│       └── update-mirrors.yml    # Automated mirror update workflow
 ├── README.md                     # This documentation
 └── LICENSE                       # MIT License
 ```
@@ -489,4 +518,11 @@ The refactored scripts include comprehensive error handling and professional log
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+
+
+
+
+
+
