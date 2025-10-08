@@ -5,10 +5,6 @@
 # 
 # Usage: ./emergency_storage.sh [--sources] [--allow_download_from_mirror] [drive_address]
 # Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts
-#
-# Author: Victor Kushnir
-# Project: https://github.com/VictoKu1/EmergencyStorage
-# License: MIT
 
 set -e  # Exit on any error
 
