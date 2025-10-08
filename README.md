@@ -518,4 +518,11 @@ The refactored scripts include comprehensive error handling and professional log
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+
+
+
+
+
+
