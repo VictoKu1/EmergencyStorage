@@ -70,9 +70,9 @@ The original system had hardcoded mirror URLs in the bash script, which could be
 - Self-maintaining mirror lists
 
 ### ✅ Reliability
-- Graceful fallback to hardcoded mirrors
+- Requires JSON file to be present and valid
+- Automated updates ensure JSON is always current
 - No breaking changes to existing functionality
-- Works even if JSON or Python unavailable
 
 ### ✅ Extensibility
 - Designed to support multiple data sources
@@ -100,7 +100,7 @@ All tests pass successfully:
 
 1. **Python for scraping**: More robust HTML parsing than pure bash
 2. **JSON for storage**: Standard format, easy to parse and maintain
-3. **Fallback mechanism**: Ensures reliability even if automation fails
+3. **No fallback mirrors**: Ensures mirrors are always dynamically sourced from official list
 4. **GitHub Actions**: Built-in, no external services needed
 5. **Daily schedule**: Balances freshness with resource usage
 
@@ -131,7 +131,7 @@ New files:
 - `test_mirrors.sh`
 
 Modified files:
-- `scripts/kiwix.sh` (added JSON loading, maintained fallback)
+- `scripts/kiwix.sh` (added JSON loading, removed hardcoded mirrors)
 - `.gitignore` (excluded Python cache)
 - `README.md` (added feature documentation)
 

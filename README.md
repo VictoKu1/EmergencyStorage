@@ -60,7 +60,7 @@ EmergencyStorage features an automated system that keeps mirror lists up-to-date
 
 - **Automatic Updates**: Mirror lists are scraped from official sources and updated every 24 hours via GitHub Actions
 - **JSON Storage**: Mirrors are stored in `data/mirrors/kiwix.json` for easy inspection and manual editing
-- **Fallback Support**: Scripts automatically fall back to hardcoded mirrors if JSON file is unavailable
+- **Dynamic Loading**: Scripts load mirrors directly from the JSON file, ensuring always-current mirror lists
 - **Extensible Design**: The system is designed to support multiple data sources in the future
 
 ### Manual Mirror Updates

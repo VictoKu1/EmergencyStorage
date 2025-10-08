@@ -46,6 +46,9 @@ To add mirror automation for a new source:
 3. The script will automatically create the JSON file
 4. Update the GitHub Actions workflow if needed
 
-## Fallback Behavior
+## Important Notes
 
-If the JSON file cannot be read or is missing, scripts will fall back to hardcoded mirror lists to ensure reliability.
+- The JSON file is **required** for the scripts to function
+- Ensure the JSON file is present and properly formatted
+- Scripts will fail if the JSON file cannot be read or is missing
+- The automated GitHub Actions workflow ensures the JSON file stays up-to-date
