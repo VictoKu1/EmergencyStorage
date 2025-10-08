@@ -19,6 +19,12 @@ Thumbs.db
 # Log files
 *.log
 
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
 # Editor/IDE files
 .vscode/
 .idea/
