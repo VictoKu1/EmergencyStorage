@@ -127,6 +127,56 @@ The script determines whether to download a file based on:
 
 After successful download, the script automatically updates the `downloaded` flag to `true` in the configuration file.
 
+### Behavior Flow Chart
+
+```
+Start
+  ↓
+Check updateFile flag
+  ↓
+  ├─→ updateFile = true → Download file → Update downloaded = true
+  │
+  └─→ updateFile = false
+        ↓
+      Check downloaded flag
+        ↓
+        ├─→ downloaded = false → Download file → Update downloaded = true
+        │
+        └─→ downloaded = true → Skip (already downloaded)
+```
+
+### Example Scenario
+
+**First Run:**
+```json
+{
+  "url": "https://example.com/file.zip",
+  "updateFile": false,
+  "downloaded": false
+}
+```
+→ Downloads file, sets `downloaded = true`
+
+**Second Run:**
+```json
+{
+  "url": "https://example.com/file.zip",
+  "updateFile": false,
+  "downloaded": true
+}
+```
+→ Skips (already downloaded)
+
+**With updateFile = true:**
+```json
+{
+  "url": "https://example.com/news.json",
+  "updateFile": true,
+  "downloaded": true
+}
+```
+→ Always downloads regardless of `downloaded` flag
+
 ## File Organization
 
 Downloaded files are organized in directories matching their hierarchical structure:
