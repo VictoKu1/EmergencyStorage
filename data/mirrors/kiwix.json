@@ -1,50 +1,62 @@
 {
   "source": "kiwix",
-  "last_updated": "2024-01-01T00:00:00Z",
+  "last_updated": "2025-10-09T00:09:51.186812Z",
   "mirrors": {
     "rsync": [
+      "mirror-sites-in.mblibrary.info/download.kiwix.org/",
       "ftp.fau.de/kiwix/",
+      "mirrors.dotsrc.org/kiwix/",
+      "rsyncd-service/self.download.kiwix.org/",
       "mirror-sites-fr.mblibrary.info/download.kiwix.org/",
       "ftp.mirrorservice.org/download.kiwix.org/",
+      "md.mirrors.hacktegic.com/kiwix-md/",
       "ftp.nluug.nl/kiwix/",
       "mirror.accum.se/mirror/kiwix.org/",
       "mirror-sites-ca.mblibrary.info/download.kiwix.org/",
       "wi.mirror.driftle.ss/kiwix/",
       "ny.mirror.driftle.ss/kiwix/",
       "mirror.triplebit.org/download.kiwix.org/",
-      "ftpmirror.your.org/pub/kiwix/",
-      "mirrors.dotsrc.org/kiwix/",
-      "rsyncd-service/self.download.kiwix.org/",
-      "md.mirrors.hacktegic.com/kiwix-md/",
-      "mirror-sites-in.mblibrary.info/download.kiwix.org/"
+      "ftpmirror.your.org/pub/kiwix/"
     ],
     "ftp": [
       "ftp://ftp.fau.de/kiwix/",
+      "ftp://mirrors.dotsrc.org/kiwix/",
+      "ftp://mirror.download.kiwix.org/",
       "ftp://ftp.mirrorservice.org/sites/download.kiwix.org/",
       "ftp://ftp.nluug.nl/pub/kiwix/",
       "ftp://mirror.accum.se/mirror/kiwix.org/",
-      "ftp://ftpmirror.your.org/pub/kiwix/",
-      "ftp://mirrors.dotsrc.org/kiwix/",
-      "ftp://mirror.download.kiwix.org/"
+      "ftp://ftpmirror.your.org/pub/kiwix/"
     ],
     "https": [
+      "https://www.mbgroup.global/",
+      "https://mirror-sites-in.mblibrary.info/mirror-sites/download.kiwix.org/",
+      "https://www.fau.de/",
       "https://ftp.fau.de/kiwix/",
+      "https://dotsrc.org",
+      "https://mirrors.dotsrc.org/kiwix/",
+      "https://www.kiwix.org",
+      "https://mirror.download.kiwix.org/",
       "https://mirror-sites-fr.mblibrary.info/mirror-sites/download.kiwix.org/",
+      "https://www.kent.ac.uk/computing",
       "https://www.mirrorservice.org/sites/download.kiwix.org/",
+      "https://isoc.org.il",
+      "https://mirror.isoc.org.il/pub/kiwix/",
+      "https://md.mirrors.hacktegic.com/",
+      "https://md.mirrors.hacktegic.com/kiwix-md/",
+      "https://nluug.nl",
       "https://ftp.nluug.nl/pub/kiwix/",
+      "https://www.accum.se",
       "https://mirror.accum.se/mirror/kiwix.org/",
       "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/",
+      "https://driftle.ss/",
       "https://wi.mirror.driftle.ss/kiwix/",
       "https://ny.mirror.driftle.ss/kiwix/",
+      "https://www.triplebit.org/",
       "https://mirror.triplebit.org/download.kiwix.org/",
-      "https://ftpmirror.your.org/pub/kiwix/",
-      "https://mirrors.dotsrc.org/kiwix/",
-      "https://mirror.download.kiwix.org/",
-      "https://mirror.isoc.org.il/pub/kiwix/",
-      "https://md.mirrors.hacktegic.com/kiwix-md/",
+      "https://wikimedia.org",
       "https://dumps.wikimedia.org/kiwix/",
-      "https://mirror-sites-in.mblibrary.info/mirror-sites/download.kiwix.org/"
+      "https://your.org",
+      "https://ftpmirror.your.org/pub/kiwix/"
     ]
   }
 }
-
