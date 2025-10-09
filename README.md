@@ -8,6 +8,7 @@ A modular project to download and mirror critical knowledge from multiple source
 - **Multiple Data Sources**: Kiwix, OpenZIM, OpenStreetMap, Internet Archive (Software, Music, Movies, Texts)
 - **Modular Design**: Each source has its own script for easy maintenance
 - **Dynamic Mirror Management**: Auto-updated mirror lists every 24 hours via GitHub Actions
+- **Manual Source Downloads**: Configure and download from specific URLs with smart update control
 - **Professional Logging**: Color-coded output with comprehensive error handling
 - **Flexible Usage**: Download all sources or select specific ones
 - **Resume Support**: Picks up where it left off if interrupted
@@ -44,6 +45,9 @@ chmod +x emergency_storage.sh scripts/*.sh
 ./emergency_storage.sh --openzim /mnt/external_drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
 
+# Download from manual sources configuration
+python3 scripts/download_manual_sources.py
+
 # Show help
 ./emergency_storage.sh --help
 ```
@@ -60,6 +64,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 - **[Adding Data Sources](docs/ADDING_SOURCES.md)** - Template system for new sources
 - **[Error Handling](docs/ERROR_HANDLING.md)** - Logging and error management
 - **[Mirror System](docs/MIRROR_SYSTEM.md)** - Dynamic mirror management details
+- **[Manual Sources](docs/MANUAL_SOURCES.md)** - Configure manual download sources
 
 ## 📦 Available Data Sources
 
