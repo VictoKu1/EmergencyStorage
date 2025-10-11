@@ -1,6 +1,6 @@
 {
   "source": "kiwix",
-  "last_updated": "2025-10-10T00:10:32.273596Z",
+  "last_updated": "2025-10-11T00:09:08.568666Z",
   "mirrors": {
     "rsync": [
       "mirror-sites-in.mblibrary.info/download.kiwix.org/",
@@ -9,7 +9,6 @@
       "rsyncd-service/self.download.kiwix.org/",
       "mirror-sites-fr.mblibrary.info/download.kiwix.org/",
       "ftp.mirrorservice.org/download.kiwix.org/",
-      "md.mirrors.hacktegic.com/kiwix-md/",
       "ftp.nluug.nl/kiwix/",
       "mirror.accum.se/mirror/kiwix.org/",
       "mirror-sites-ca.mblibrary.info/download.kiwix.org/",
@@ -41,8 +40,6 @@
       "https://www.mirrorservice.org/sites/download.kiwix.org/",
       "https://isoc.org.il",
       "https://mirror.isoc.org.il/pub/kiwix/",
-      "https://md.mirrors.hacktegic.com/",
-      "https://md.mirrors.hacktegic.com/kiwix-md/",
       "https://nluug.nl",
       "https://ftp.nluug.nl/pub/kiwix/",
       "https://www.accum.se",
