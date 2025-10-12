@@ -7,6 +7,7 @@ A modular project to download and mirror critical knowledge from multiple source
 
 - **Multiple Data Sources**: Kiwix, OpenZIM, OpenStreetMap, Internet Archive (Software, Music, Movies, Texts)
 - **Modular Design**: Each source has its own script for easy maintenance
+- **Automatic Updates**: Schedule automatic resource updates with configurable frequency and resource selection
 - **Dynamic Mirror Management**: Auto-updated mirror lists every 24 hours via GitHub Actions
 - **Manual Source Downloads**: Configure and download from specific URLs with smart update control
 - **Git Repositories Manager**: Clone and update multiple Git repositories in parallel with error isolation
@@ -59,6 +60,10 @@ python3 scripts/download_manual_sources.py
 # Clone/update Git repositories directly
 python3 scripts/download_git_repos.py
 
+# Automatic updates with resource flags
+python3 scripts/auto_update.py
+python3 scripts/auto_update.py --resource1 --resource2
+
 # Show help
 ./emergency_storage.sh --help
 ```
@@ -69,6 +74,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 - **[Installation Guide](docs/INSTALLATION.md)** - Detailed setup instructions and prerequisites
 - **[Usage Guide](docs/USAGE.md)** - Complete usage examples and tips
+- **[Automatic Updates](docs/AUTO_UPDATE.md)** - Schedule and automate resource updates
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and project structure
 - **[Storage Requirements](docs/STORAGE.md)** - Size estimates and content descriptions
 - **[Contributing](docs/CONTRIBUTING.md)** - How to contribute and development workflow

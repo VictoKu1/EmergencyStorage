@@ -1,0 +1,59 @@
+{
+  "resources": {
+    "resource1": {
+      "enabled": true,
+      "name": "Kiwix Mirror",
+      "script": "scripts/kiwix.sh",
+      "args": [],
+      "update_frequency": "weekly",
+      "description": "Kiwix offline Wikipedia and educational content"
+    },
+    "resource2": {
+      "enabled": true,
+      "name": "OpenZIM Files",
+      "script": "scripts/openzim.sh",
+      "args": [],
+      "update_frequency": "weekly",
+      "description": "OpenZIM compressed offline content"
+    },
+    "resource3": {
+      "enabled": true,
+      "name": "OpenStreetMap Data",
+      "script": "scripts/openstreetmap.sh",
+      "args": [],
+      "update_frequency": "weekly",
+      "description": "Complete planet mapping data"
+    },
+    "resource4": {
+      "enabled": false,
+      "name": "Internet Archive Software",
+      "script": "scripts/ia-software.sh",
+      "args": [],
+      "update_frequency": "monthly",
+      "description": "Preserved software, games, and applications"
+    },
+    "resource5": {
+      "enabled": false,
+      "name": "Manual Sources",
+      "script": "scripts/download_manual_sources.py",
+      "args": [],
+      "update_frequency": "daily",
+      "description": "User-configured download sources from manual_sources.json"
+    }
+  },
+  "global_settings": {
+    "destination_path": "/mnt/external_drive",
+    "allow_mirror_fallback": false,
+    "log_file": "logs/auto_update.log",
+    "notification_email": "",
+    "retry_failed": true,
+    "max_retries": 3
+  },
+  "schedule": {
+    "default_time": "02:00",
+    "timezone": "UTC",
+    "daily": "0 2 * * *",
+    "weekly": "0 2 * * 0",
+    "monthly": "0 2 1 * *"
+  }
+}

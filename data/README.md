@@ -1,10 +1,28 @@
-# Manual Sources Configuration
+# Data Directory
 
-This file contains manually configured download sources where keys are download methods (wget, curl, rsync, git, etc.).
+This directory contains configuration files for EmergencyStorage.
+
+## Configuration Files
+
+### manual_sources.json
+
+Manually configured download sources where keys are download methods (wget, curl, rsync, git, etc.).
 
 **Important:** This is for user-specified URLs that are NOT covered by existing resource scripts (Kiwix, OpenZIM, OpenStreetMap, Internet Archive). For those resources, use their dedicated scripts in the `scripts/` directory.
 
-## Structure
+### auto_update_config.json
+
+Configuration for the automatic resource update system. This file controls:
+- Which resources to update automatically
+- Update frequencies (daily, weekly, monthly)
+- Destination paths
+- Retry logic and logging
+
+See [AUTO_UPDATE_CONFIG_README.md](AUTO_UPDATE_CONFIG_README.md) for examples and [docs/AUTO_UPDATE.md](../docs/AUTO_UPDATE.md) for full documentation.
+
+## Manual Sources Configuration
+
+### Structure
 
 ```json
 {

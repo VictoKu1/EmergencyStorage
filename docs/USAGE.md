@@ -140,6 +140,81 @@ For detailed documentation on configuring manual sources, see:
 - [Manual Sources Documentation](MANUAL_SOURCES.md)
 - [Manual Sources Quick Reference](MANUAL_SOURCES_QUICK_REF.md)
 
+## Automatic Updates Usage
+
+The automatic update system allows you to schedule and automate resource downloads with configurable frequency and resource selection.
+
+### Quick Start with Automatic Updates
+
+```bash
+# Update all enabled resources
+python3 scripts/auto_update.py
+
+# Update specific resources using flags
+python3 scripts/auto_update.py --resource1
+python3 scripts/auto_update.py --resource1 --resource2 --resource5
+
+# Test configuration without executing
+python3 scripts/auto_update.py --dry-run
+
+# Use custom configuration
+python3 scripts/auto_update.py --config /path/to/config.json
+```
+
+### Resource Flags
+
+- `--resource1` - Kiwix Mirror
+- `--resource2` - OpenZIM Files
+- `--resource3` - OpenStreetMap Data
+- `--resource4` - Internet Archive Software
+- `--resource5` - Manual Sources
+
+### Configuration
+
+Edit `data/auto_update_config.json` to:
+- Enable/disable specific resources
+- Set update frequencies (daily, weekly, monthly)
+- Configure destination path
+- Enable retry logic and logging
+
+Example configuration:
+```json
+{
+  "resources": {
+    "resource1": {
+      "enabled": true,
+      "name": "Kiwix Mirror",
+      "update_frequency": "weekly"
+    }
+  },
+  "global_settings": {
+    "destination_path": "/mnt/external_drive",
+    "retry_failed": true,
+    "max_retries": 3
+  }
+}
+```
+
+### Scheduling Automatic Updates
+
+**Using GitHub Actions (Automatic):**
+- Workflow runs based on schedule in `.github/workflows/auto-update-resources.yml`
+- Default: Daily at 02:00 UTC
+- Can be manually triggered from GitHub Actions tab
+
+**Using Local Cron:**
+```bash
+# Edit crontab
+crontab -e
+
+# Add line for daily updates at 02:00
+0 2 * * * cd /path/to/EmergencyStorage && python3 scripts/auto_update.py
+```
+
+For detailed documentation on automatic updates, see:
+- [Automatic Updates Documentation](AUTO_UPDATE.md)
+- [Automatic Updates Quick Reference](AUTO_UPDATE_QUICK_REF.md)
+
 ## Tips for Optimal Usage
 
 ### For Large Downloads
