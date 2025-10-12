@@ -9,6 +9,7 @@ A modular project to download and mirror critical knowledge from multiple source
 - **Modular Design**: Each source has its own script for easy maintenance
 - **Dynamic Mirror Management**: Auto-updated mirror lists every 24 hours via GitHub Actions
 - **Manual Source Downloads**: Configure and download from specific URLs with smart update control
+- **Git Repositories Manager**: Clone and update multiple Git repositories in parallel with error isolation
 - **Professional Logging**: Color-coded output with comprehensive error handling
 - **Flexible Usage**: Download all sources or select specific ones
 - **Resume Support**: Picks up where it left off if interrupted
@@ -49,8 +50,14 @@ chmod +x emergency_storage.sh scripts/*.sh
 # Download from manual sources configuration (must be explicitly selected)
 ./emergency_storage.sh --manual-sources /mnt/external_drive
 
+# Clone/update Git repositories (must be explicitly selected)
+./emergency_storage.sh --git-repos /mnt/external_drive
+
 # Download from manual sources configuration
 python3 scripts/download_manual_sources.py
+
+# Clone/update Git repositories directly
+python3 scripts/download_git_repos.py
 
 # Show help
 ./emergency_storage.sh --help
@@ -69,6 +76,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 - **[Error Handling](docs/ERROR_HANDLING.md)** - Logging and error management
 - **[Mirror System](docs/MIRROR_SYSTEM.md)** - Dynamic mirror management details
 - **[Manual Sources](docs/MANUAL_SOURCES.md)** - Configure manual download sources
+- **[Git Repositories](docs/GIT_REPOSITORIES.md)** - Clone and manage Git repositories in parallel
 
 ## 📦 Available Data Sources
 
