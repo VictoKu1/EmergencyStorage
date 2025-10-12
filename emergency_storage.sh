@@ -25,7 +25,7 @@ show_usage() {
     echo "If only a directory path is provided, defaults to downloading all sources to that directory."
     echo ""
     echo -e "${COLOR_GREEN}Available Sources:${COLOR_RESET}"
-    echo "  --all            Download from all sources (default, excludes manual-sources and git-repos)"
+    echo "  --all            Download from all sources (default, includes git repositories, excludes manual-sources)"
     echo "  --kiwix          Download Kiwix mirror (offline Wikipedia, etc.)"
     echo "  --openzim        Download OpenZIM files (educational content)"
     echo "  --openstreetmap  Download OpenStreetMap data (world map data)"
@@ -33,8 +33,8 @@ show_usage() {
     echo "  --ia-music       Download Internet Archive music collection"
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
+    echo "  --git, --git-repos  Clone/update Git repositories from JSON configuration"
     echo "  --manual-sources Download from manually configured JSON sources (not part of --all)"
-    echo "  --git-repos      Clone/update Git repositories from JSON configuration (not part of --all)"
     echo ""
     echo -e "${COLOR_GREEN}Options:${COLOR_RESET}"
     echo "  --allow_download_from_mirror  Allow downloading from alternative Kiwix mirrors"
@@ -48,6 +48,7 @@ show_usage() {
     echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
     echo "  $0 --manual-sources /mnt/external_drive  # Download from manual sources JSON"
     echo "  $0 --git-repos /mnt/external_drive       # Clone/update Git repositories"
+    echo "  $0 --git /mnt/external_drive             # Clone/update Git repositories (alias)"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive"
     echo "  $0 --all --allow_download_from_mirror /mnt/external_drive"
     echo ""
@@ -239,7 +240,7 @@ download_all() {
         return 1
     fi
     
-    local sources=("kiwix" "openzim" "openstreetmap" "ia-software" "ia-music" "ia-movies" "ia-texts")
+    local sources=("kiwix" "openzim" "openstreetmap" "ia-software" "ia-music" "ia-movies" "ia-texts" "git-repos")
     local failed_sources=()
     
     for source in "${sources[@]}"; do
@@ -293,7 +294,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git-repos)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git-repos|--git)
                 if [ -n "$source" ]; then
                     log_error "Multiple source options specified"
                     show_usage
@@ -384,7 +385,7 @@ main() {
         --manual-sources)
             download_manual_sources "$drive_path"
             ;;
-        --git-repos)
+        --git-repos|--git)
             download_git_repos "$drive_path"
             ;;
         *)

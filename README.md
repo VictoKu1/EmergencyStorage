@@ -36,10 +36,10 @@ chmod +x emergency_storage.sh scripts/*.sh
 ### Basic Usage
 
 ```bash
-# Download all sources to current directory
+# Download all sources to current directory (includes git repositories)
 ./emergency_storage.sh
 
-# Download all sources to external drive
+# Download all sources to external drive (includes git repositories)
 ./emergency_storage.sh /mnt/external_drive
 
 # Download specific source only
@@ -47,11 +47,12 @@ chmod +x emergency_storage.sh scripts/*.sh
 ./emergency_storage.sh --openzim /mnt/external_drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
 
+# Clone/update Git repositories only
+./emergency_storage.sh --git /mnt/external_drive
+./emergency_storage.sh --git-repos /mnt/external_drive  # Alternative syntax
+
 # Download from manual sources configuration (must be explicitly selected)
 ./emergency_storage.sh --manual-sources /mnt/external_drive
-
-# Clone/update Git repositories (must be explicitly selected)
-./emergency_storage.sh --git-repos /mnt/external_drive
 
 # Download from manual sources configuration
 python3 scripts/download_manual_sources.py
@@ -95,7 +96,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 ## 🛠️ Available Options
 
 ```bash
---all              # Download from all sources (default, excludes manual-sources)
+--all              # Download from all sources (default, includes git repositories)
 --kiwix            # Kiwix mirror only
 --openzim          # OpenZIM files only
 --openstreetmap    # OpenStreetMap data only
@@ -103,6 +104,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 --ia-music         # Internet Archive music only
 --ia-movies        # Internet Archive movies only
 --ia-texts         # Internet Archive texts only
+--git, --git-repos # Git repositories only
 --manual-sources   # Manual JSON sources only (must be explicitly selected)
 ```
 
