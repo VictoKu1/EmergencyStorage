@@ -23,7 +23,7 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 
 ### Available Sources
 
-- `--all` - Download from all sources (default when no flags specified, excludes manual-sources)
+- `--all` - Download from all sources (default when no flags specified, includes git repositories, excludes manual-sources)
 - `--kiwix` - Download Kiwix mirror only
 - `--openzim` - Download OpenZIM files only
 - `--openstreetmap` - Download OpenStreetMap data only
@@ -31,15 +31,16 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 - `--ia-music` - Download Internet Archive music collection only
 - `--ia-movies` - Download Internet Archive movies collection only
 - `--ia-texts` - Download Internet Archive scientific texts only
+- `--git` - Clone/update Git repositories from JSON configuration
 - `--manual-sources` - Download from manually configured JSON sources (must be selected explicitly, not part of --all)  
 
 ### Examples
 
 ```bash
-# Simple: Download everything to current directory
+# Simple: Download everything to current directory (includes git repos)
 ./emergency_storage.sh
 
-# Simple: Download everything to external drive
+# Simple: Download everything to external drive (includes git repos)
 ./emergency_storage.sh /mnt/external_drive
 
 # Advanced: Download only Kiwix mirror to external drive
@@ -66,7 +67,10 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 # Advanced: Download from manual sources JSON configuration
 ./emergency_storage.sh --manual-sources /mnt/external_drive
 
-# Advanced: Explicitly download everything to external drive
+# Advanced: Clone/update Git repositories only
+./emergency_storage.sh --git /mnt/external_drive
+
+# Advanced: Explicitly download everything to external drive (includes git repos)
 ./emergency_storage.sh --all /mnt/external_drive
 
 # Show help

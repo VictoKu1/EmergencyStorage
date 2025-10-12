@@ -7,7 +7,13 @@
 ## Quick Commands
 
 ```bash
-# Clone all repositories
+# Via main script (recommended)
+./emergency_storage.sh --git /mnt/external_drive
+
+# Automatically included with --all
+./emergency_storage.sh --all /mnt/external_drive
+
+# Clone all repositories (standalone)
 python3 scripts/download_git_repos.py --operation clone
 
 # Update existing repositories

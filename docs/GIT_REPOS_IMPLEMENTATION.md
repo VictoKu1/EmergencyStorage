@@ -28,14 +28,16 @@ Added comprehensive Git repository management functionality to EmergencyStorage 
 
 ### 3. Integration
 - **File**: `emergency_storage.sh`
-- **Added**: `--git-repos` option
+- **Added**: `--git` option
 - **Function**: `download_git_repos()`
-- **Usage**: `./emergency_storage.sh --git-repos /path/to/destination`
+- **Usage**: 
+  - `./emergency_storage.sh --git /path/to/destination`
+  - Automatically included when using `--all`
 
 ### 4. Documentation
 - **Full Guide**: `docs/GIT_REPOSITORIES.md`
 - **Quick Reference**: `docs/GIT_REPOSITORIES_QUICK_REF.md`
-- **Updated**: `README.md` with git-repos feature
+- **Updated**: `README.md` with git feature
 
 ### 5. Testing
 - **File**: `tests/test_git_repos.sh`
@@ -82,7 +84,10 @@ Added comprehensive Git repository management functionality to EmergencyStorage 
 python3 scripts/download_git_repos.py
 
 # Via main script
-./emergency_storage.sh --git-repos /mnt/external_drive
+./emergency_storage.sh --git /mnt/external_drive
+
+# Automatically included with --all
+./emergency_storage.sh --all /mnt/external_drive
 
 # Dry run
 python3 scripts/download_git_repos.py --dry-run
@@ -151,8 +156,11 @@ Each repository operation runs in its own thread. If one fails:
 - `docs/GIT_REPOSITORIES_QUICK_REF.md` - Quick reference
 
 ### Modified Files
-- `README.md` - Added git-repos feature mention
-- `emergency_storage.sh` - Added --git-repos option and download_git_repos() function
+- `README.md` - Added git feature mention
+- `emergency_storage.sh` - Added --git option, included git in --all
+- `docs/USAGE.md` - Updated to reflect --git option and inclusion in --all
+- `docs/GIT_REPOSITORIES.md` - Updated to reflect --git option and inclusion in --all
+- `docs/GIT_REPOS_IMPLEMENTATION.md` - Updated implementation details
 
 ## Future Enhancements (Optional)
 
