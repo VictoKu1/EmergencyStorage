@@ -15,8 +15,21 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 - **[Usage Guide](USAGE.md)** - How to use EmergencyStorage
   - Main script usage with examples
   - Individual script usage
+  - Automatic updates with resource flags
   - Tips for optimal usage
   - Command-line options
+
+- **[Automatic Updates](AUTO_UPDATE.md)** - Schedule and automate resource updates
+  - Configuration and setup
+  - Resource flags (--resource1, --resource2, etc.)
+  - Scheduling with GitHub Actions or cron
+  - Changing update times and frequencies
+  - Examples and troubleshooting
+
+- **[Automatic Updates Quick Reference](AUTO_UPDATE_QUICK_REF.md)** - Quick commands and settings
+  - Common commands
+  - Configuration examples
+  - Scheduling quick reference
 
 ### Understanding the System
 
@@ -66,6 +79,9 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 
 **...get started quickly**
 → Start with [Installation Guide](INSTALLATION.md), then [Usage Guide](USAGE.md)
+
+**...set up automatic updates**
+→ See [Automatic Updates](AUTO_UPDATE.md) or [Quick Reference](AUTO_UPDATE_QUICK_REF.md)
 
 **...understand how it works**
 → Read [Architecture](ARCHITECTURE.md)
