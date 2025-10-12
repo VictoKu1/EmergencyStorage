@@ -7,11 +7,8 @@
 ## Quick Commands
 
 ```bash
-# Via main script (recommended, --git alias)
+# Via main script (recommended)
 ./emergency_storage.sh --git /mnt/external_drive
-
-# Via main script (using --git-repos)
-./emergency_storage.sh --git-repos /mnt/external_drive
 
 # Automatically included with --all
 ./emergency_storage.sh --all /mnt/external_drive

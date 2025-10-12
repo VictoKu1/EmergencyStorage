@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test script to verify --git alias and git-repos inclusion in --all
+# Test script to verify --git option and git inclusion in --all
 
 set -e
 
@@ -9,7 +9,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 echo "========================================"
-echo "Testing --git Alias and --all Integration"
+echo "Testing --git Option and --all Integration"
 echo "========================================"
 echo
 
@@ -23,13 +23,13 @@ else
 fi
 echo
 
-# Test 2: Verify --git and --git-repos appear together in help
-echo "Test 2: Checking if --git and --git-repos are shown together..."
-if ./emergency_storage.sh --help 2>&1 | grep -q "\-\-git, \-\-git-repos"; then
-    echo "✓ --git and --git-repos shown together"
-else
-    echo "✗ --git and --git-repos not shown together"
+# Test 2: Verify --git-repos is NOT in help (should only be --git)
+echo "Test 2: Checking that --git-repos is not present..."
+if ./emergency_storage.sh --help 2>&1 | grep -q "\-\-git-repos"; then
+    echo "✗ --git-repos still found in help output (should be removed)"
     exit 1
+else
+    echo "✓ --git-repos not found (correctly removed)"
 fi
 echo
 

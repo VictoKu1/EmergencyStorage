@@ -308,11 +308,8 @@ python3 scripts/download_git_repos.py \
 The Git Repositories Manager integrates with the main EmergencyStorage system:
 
 ```bash
-# Via main script (using --git alias)
+# Via main script
 ./emergency_storage.sh --git /mnt/external_drive
-
-# Via main script (using --git-repos)
-./emergency_storage.sh --git-repos /mnt/external_drive
 
 # Automatically included when using --all
 ./emergency_storage.sh --all /mnt/external_drive

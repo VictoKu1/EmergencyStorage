@@ -31,7 +31,7 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 - `--ia-music` - Download Internet Archive music collection only
 - `--ia-movies` - Download Internet Archive movies collection only
 - `--ia-texts` - Download Internet Archive scientific texts only
-- `--git`, `--git-repos` - Clone/update Git repositories from JSON configuration
+- `--git` - Clone/update Git repositories from JSON configuration
 - `--manual-sources` - Download from manually configured JSON sources (must be selected explicitly, not part of --all)  
 
 ### Examples
@@ -69,7 +69,6 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 
 # Advanced: Clone/update Git repositories only
 ./emergency_storage.sh --git /mnt/external_drive
-./emergency_storage.sh --git-repos /mnt/external_drive  # Alternative syntax
 
 # Advanced: Explicitly download everything to external drive (includes git repos)
 ./emergency_storage.sh --all /mnt/external_drive

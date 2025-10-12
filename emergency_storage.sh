@@ -4,7 +4,7 @@
 # This script coordinates multiple specialized download scripts for different data sources
 # 
 # Usage: ./emergency_storage.sh [--sources] [--allow_download_from_mirror] [drive_address]
-# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources, git-repos
+# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources, git
 
 set -e  # Exit on any error
 
@@ -33,7 +33,7 @@ show_usage() {
     echo "  --ia-music       Download Internet Archive music collection"
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
-    echo "  --git, --git-repos  Clone/update Git repositories from JSON configuration"
+    echo "  --git            Clone/update Git repositories from JSON configuration"
     echo "  --manual-sources Download from manually configured JSON sources (not part of --all)"
     echo ""
     echo -e "${COLOR_GREEN}Options:${COLOR_RESET}"
@@ -47,8 +47,7 @@ show_usage() {
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
     echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
     echo "  $0 --manual-sources /mnt/external_drive  # Download from manual sources JSON"
-    echo "  $0 --git-repos /mnt/external_drive       # Clone/update Git repositories"
-    echo "  $0 --git /mnt/external_drive             # Clone/update Git repositories (alias)"
+    echo "  $0 --git /mnt/external_drive             # Clone/update Git repositories"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive"
     echo "  $0 --all --allow_download_from_mirror /mnt/external_drive"
     echo ""
@@ -294,7 +293,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git-repos|--git)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git)
                 if [ -n "$source" ]; then
                     log_error "Multiple source options specified"
                     show_usage
@@ -385,7 +384,7 @@ main() {
         --manual-sources)
             download_manual_sources "$drive_path"
             ;;
-        --git-repos|--git)
+        --git)
             download_git_repos "$drive_path"
             ;;
         *)

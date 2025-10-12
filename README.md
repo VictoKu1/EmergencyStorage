@@ -49,7 +49,6 @@ chmod +x emergency_storage.sh scripts/*.sh
 
 # Clone/update Git repositories only
 ./emergency_storage.sh --git /mnt/external_drive
-./emergency_storage.sh --git-repos /mnt/external_drive  # Alternative syntax
 
 # Download from manual sources configuration (must be explicitly selected)
 ./emergency_storage.sh --manual-sources /mnt/external_drive
@@ -104,7 +103,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 --ia-music         # Internet Archive music only
 --ia-movies        # Internet Archive movies only
 --ia-texts         # Internet Archive texts only
---git, --git-repos # Git repositories only
+--git              # Git repositories only
 --manual-sources   # Manual JSON sources only (must be explicitly selected)
 ```
 
