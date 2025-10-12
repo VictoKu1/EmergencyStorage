@@ -208,3 +208,8 @@ cat git_repos/gitlog.txt
 ## Conclusion
 
 The Git Repositories feature is fully implemented, tested, and integrated into EmergencyStorage. It provides robust, parallel repository management with comprehensive error handling and logging.
+
+For more information, see:
+- [Git Repositories Documentation](GIT_REPOSITORIES.md)
+- [Git Repositories Quick Reference](GIT_REPOSITORIES_QUICK_REF.md)
+- [Main README](../README.md)

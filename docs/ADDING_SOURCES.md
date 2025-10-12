@@ -185,6 +185,8 @@ See `examples/research-papers.sh` for a concrete example showing how to:
 
 After implementing your resource:
 1. Test thoroughly in various scenarios
-2. Update the main README.md with your resource information
-3. Consider contributing your resource back to the project
-4. Document any special requirements or considerations
+2. Update the main `README.md` with your resource information
+3. Update `docs/STORAGE.md` with storage requirements
+4. Update `docs/USAGE.md` with usage examples
+5. Consider contributing your resource back to the project
+6. Document any special requirements or considerations

@@ -93,9 +93,30 @@ chmod +x scripts/*.sh
 ./scripts/ia-music.sh /mnt/external_drive          # IA Music collection
 ./scripts/ia-movies.sh /mnt/external_drive         # IA Movies collection
 ./scripts/ia-texts.sh /mnt/external_drive          # IA Texts collection
+
+# Python scripts for Git repos and manual sources
+python3 scripts/download_git_repos.py --dest /mnt/external_drive/git_repos
+python3 scripts/download_manual_sources.py
 ```
 
 ## Manual Sources Usage
+
+Download from manually configured sources:
+
+```bash
+# Download all configured sources
+python3 scripts/download_manual_sources.py
+
+# Dry run to see what would be downloaded
+python3 scripts/download_manual_sources.py --dry-run
+
+# Use custom configuration file
+python3 scripts/download_manual_sources.py --config /path/to/config.json
+```
+
+**Configuration**: Edit `data/manual_sources.json` to add your custom download sources.
+
+See [Manual Sources Documentation](MANUAL_SOURCES.md) for full details on configuration and usage.
 
 The `--manual-sources` flag allows you to download files from manually configured sources defined in `data/manual_sources.json`. This feature:
 

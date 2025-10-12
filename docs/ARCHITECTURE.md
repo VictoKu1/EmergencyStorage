@@ -13,6 +13,10 @@ EmergencyStorage uses a **modular architecture** with individual scripts for eac
 - **`scripts/ia-music.sh`** - Internet Archive music collection
 - **`scripts/ia-movies.sh`** - Internet Archive movies collection
 - **`scripts/ia-texts.sh`** - Internet Archive texts/academic papers collection
+- **`scripts/download_git_repos.py`** - Git repository cloning and updating in parallel
+- **`scripts/download_manual_sources.py`** - Manual source downloads with smart fallback
+- **`scripts/update_mirrors.py`** - Dynamic mirror list scraper and updater
+- **`scripts/auto_update.py`** - Automatic resource update scheduler
 
 ## Project Structure
 
@@ -28,15 +32,23 @@ EmergencyStorage/
 │   ├── ia-music.sh               # Internet Archive music
 │   ├── ia-movies.sh              # Internet Archive movies
 │   ├── ia-texts.sh               # Internet Archive texts
-│   └── update_mirrors.py         # Dynamic mirror scraper script
+│   ├── download_git_repos.py     # Git repository manager
+│   ├── download_manual_sources.py # Manual sources downloader
+│   ├── update_mirrors.py         # Dynamic mirror scraper script
+│   └── auto_update.py            # Automatic update scheduler
 ├── data/
-│   └── mirrors/
-│       ├── kiwix.json            # Kiwix mirror list (auto-updated)
-│       └── README.md             # Mirror system documentation
+│   ├── mirrors/
+│   │   ├── kiwix.json            # Kiwix mirror list (auto-updated)
+│   │   └── README.md             # Mirror system documentation
+│   ├── git_repositories.json     # Git repository configuration
+│   ├── manual_sources.json       # Manual sources configuration
+│   └── auto_update_config.json   # Automatic update configuration
 ├── .github/
 │   └── workflows/
-│       └── update-mirrors.yml    # Automated mirror update workflow
+│       ├── update-mirrors.yml    # Automated mirror update workflow
+│       └── auto-update-resources.yml # Automated resource updates
 ├── docs/                         # Documentation
+├── tests/                        # Test suites
 ├── README.md                     # Main documentation
 └── LICENSE                       # MIT License
 ```
