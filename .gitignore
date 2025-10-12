@@ -1,6 +1,9 @@
 # EmergencyStorage - Storage directories to ignore
 # These directories contain large data files that should not be committed
 
+# Manual downloads directory - user-downloaded content
+downloads/
+
 # Kiwix mirror data - can be GB to TB in size
 kiwix-mirror/
 

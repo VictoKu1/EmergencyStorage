@@ -1,0 +1,26 @@
+{
+  "wget": {
+    "url": "-c https://example.com/datasets/research-data-v1.tar.gz",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://example.com/datasets/research-data-v1.tar.gz", "-O /tmp/data.tar.gz https://example.com/datasets/research-data-v1.tar.gz"]
+  },
+  "curl": {
+    "url": "-L -O https://example.com/docs/manual.pdf",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["https://example.com/docs/manual.pdf", "-C - https://example.com/docs/manual.pdf"]
+  },
+  "rsync": {
+    "url": "-avz rsync://example.com/backup/dotfiles.tar.gz /destination/",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["-az rsync://example.com/backup/dotfiles.tar.gz /destination/", "user@example.com:/backup/dotfiles.tar.gz /destination/"]
+  },
+  "git": {
+    "url": "clone https://github.com/example/repo.git",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["clone --depth 1 https://github.com/example/repo.git", "clone --mirror https://github.com/example/repo.git"]
+  }
+}
