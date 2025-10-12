@@ -1,6 +1,6 @@
 # EmergencyStorage
 
-A modular project to download and mirror critical knowledge from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage.
+A modular project to download and mirror critical knowledge from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage
 
 
 ## ✨ Features
@@ -20,8 +20,9 @@ A modular project to download and mirror critical knowledge from multiple source
 
 ```bash
 # Install dependencies
-sudo apt-get update
-sudo apt-get install rsync curl wget python3 python3-venv python3-pip
+sudo apt update
+sudo apt upgrade
+sudo apt install rsync curl wget python3 python3-venv python3-pip
 
 # Clone the repository
 git clone https://github.com/VictoKu1/EmergencyStorage.git
