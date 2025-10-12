@@ -1,6 +1,6 @@
 # Manual Sources Configuration
 
-This file contains manually configured download sources organized in a hierarchical structure.
+This file contains manually configured download sources where keys are download methods (wget, curl, rsync, git, etc.).
 
 **Important:** This is for user-specified URLs that are NOT covered by existing resource scripts (Kiwix, OpenZIM, OpenStreetMap, Internet Archive). For those resources, use their dedicated scripts in the `scripts/` directory.
 
@@ -8,55 +8,43 @@ This file contains manually configured download sources organized in a hierarchi
 
 ```json
 {
-  "description": "Manual download sources with recursive flag structure",
-  "sources": {
-    "operator": {
-      "flag1": {
-        "flag2": {
-          "url": "https://example.com/file",
-          "updateFile": true|false,
-          "downloaded": true|false
-        }
-      }
-    }
+  "method": {
+    "url": "flags and URL as string",
+    "updateFile": true|false,
+    "downloaded": true|false,
+    "alternative": ["alternative1", "alternative2"]
   }
 }
 ```
 
 ## Fields
 
-- **operator**: Top-level key representing the data provider or source type
-- **flags**: Hierarchical keys for categorization (can be nested)
-- **url**: Direct download URL for the file
+- **method**: The download tool/command (wget, curl, rsync, git, transmission-cli, etc.)
+- **url**: Complete command arguments as string (flags + URL combined)
 - **updateFile**: 
   - `true` = Download every time script runs
   - `false` = Download only once (skip if already downloaded)
 - **downloaded**: Automatically managed flag indicating if file was successfully downloaded
+- **alternative**: Array of alternative URLs or flag combinations for fallback
 
-## Space Keys
+## Alternative Fallback
 
-When operators have sources at different flag depths, use `" "` (space) as a placeholder key to normalize tree structure. This ensures all URLs are at the same depth level.
+When the main URL fails, the script tries alternatives in order. If an alternative succeeds:
+1. The working alternative becomes the new main URL
+2. The failed main URL is moved to the end of alternatives
+3. Config file is automatically updated
 
 Example:
 ```json
 {
-  "sources": {
-    "provider": {
-      "category1": {
-        "subcategory": {
-          "url": "...",
-          "updateFile": false,
-          "downloaded": false
-        }
-      },
-      "category2": {
-        " ": {
-          "url": "...",
-          "updateFile": false,
-          "downloaded": false
-        }
-      }
-    }
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "https://example.com/file.zip",
+      "--timeout=30 -c https://example.com/file.zip"
+    ]
   }
 }
 ```

@@ -1,15 +1,16 @@
 # Manual Sources Download System
 
-The Manual Sources Download System allows you to configure and download files from specific URLs organized in a hierarchical structure. This is **separate from existing resource scripts** (Kiwix, OpenZIM, OpenStreetMap, Internet Archive) and is designed for **user-specified URLs** that are not covered by the automated download scripts.
+The Manual Sources Download System allows you to configure and download files using various download tools (wget, curl, rsync, git, transmission-cli, etc.). This is **separate from existing resource scripts** (Kiwix, OpenZIM, OpenStreetMap, Internet Archive) and is designed for **user-specified URLs** that are not covered by the automated download scripts.
 
 ## Overview
 
 The system provides:
-- Hierarchical organization of download sources by operator and flags
+- Simple flat structure where keys are download methods (wget, curl, rsync, git, etc.)
+- URL field contains both flags and URL in one string
+- Alternative URLs/flags for automatic fallback
+- Smart fallback: if main URL fails, tries alternatives and swaps the working one to main
 - Configurable update behavior (download every time vs. download once)
 - Automatic tracking of downloaded files
-- Tree structure normalization for consistent depth
-- Support for custom URLs using wget, curl, rsync, transmission-cli, git, or other download tools
 
 ## When to Use This System
 
@@ -17,7 +18,7 @@ The system provides:
 - Custom datasets or files from non-standard sources
 - Personal backups or configurations
 - Research data or private repositories
-- Any URL-based resource not covered by existing scripts
+- Any URL-based resource downloaded via wget, curl, rsync, transmission-cli, git, or other tools
 
 **Do NOT use manual sources for:**
 - Kiwix content (use `scripts/kiwix.sh`)
@@ -33,81 +34,65 @@ Manual sources are configured in `data/manual_sources.json` with the following s
 
 ```json
 {
-  "description": "Manual download sources with recursive flag structure",
-  "sources": {
-    "operator1": {
-      "flag1": {
-        "flag2": {
-          "url": "https://example.com/file1",
-          "updateFile": true,
-          "downloaded": false
-        }
-      },
-      "flag3": {
-        " ": {
-          "url": "https://example.com/file2",
-          "updateFile": false,
-          "downloaded": false
-        }
-      }
-    }
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://example.com/file.zip", "-O /tmp/file.zip https://example.com/file.zip"]
+  },
+  "curl": {
+    "url": "-L -O https://example.com/file.tar.gz",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["https://example.com/file.tar.gz", "-C - https://example.com/file.tar.gz"]
   }
 }
 ```
 
 ### Structure Elements
 
-#### Operators
-The top-level keys under `sources` represent different operators or providers (e.g., "kiwix", "archive").
+#### Download Method Key
+The top-level key is the download tool/method: `wget`, `curl`, `rsync`, `git`, `transmission-cli`, etc.
 
-#### Flags
-Flags create a hierarchical structure beneath each operator. They can be nested to any depth, representing different categorizations or options.
+#### URL Field
+Contains the complete command arguments (flags + URL) as a string.
 
-#### Space Keys (" ")
-When different sources under the same operator have different depths of flags, use `" "` (space) as a placeholder key. This ensures all URLs end up at the same level in the tree structure.
+**Examples:**
+- `"-c https://example.com/file.zip"` - wget with resume capability
+- `"-L -O https://example.com/file.tar.gz"` - curl with follow redirects
+- `"clone https://github.com/user/repo.git"` - git clone command
+- `"-avz user@host:/path/file.zip /local/path"` - rsync with flags
 
-**Example:**
+The script will automatically parse this to build: `{method} {url_field}`
+
+#### updateFile Flag
+- **true**: Download this file every time the script runs (useful for frequently updated content)
+- **false**: Only download if not already downloaded (useful for static archives)
+
+#### downloaded Flag
+- Automatically managed by the script
+- Set to **true** when download completes successfully
+- Set to **false** initially
+- Used with `updateFile` to determine if download should occur
+
+#### alternative Field
+An array of alternative URLs or flag combinations to try if the main URL fails.
+
+**Examples:**
 ```json
-{
-  "sources": {
-    "kiwix": {
-      "wikipedia": {
-        "en": {
-          "all": {
-            "url": "...",
-            "updateFile": true,
-            "downloaded": false
-          }
-        }
-      },
-      "wiktionary": {
-        "en": {
-          " ": {
-            "url": "...",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      }
-    }
-  }
-}
+"alternative": [
+  "https://example.com/file.zip",
+  "-O /tmp/file.zip https://example.com/file.zip",
+  "https://mirror.example.com/file.zip"
+]
 ```
 
-In this example, `wiktionary` has fewer flag levels than `wikipedia`, so a space key is used to maintain consistent tree depth.
-
-#### Source Properties
-
-Each source (leaf node) must have three properties:
-
-- **url** (string): The URL to download the file from
-- **updateFile** (boolean): 
-  - `true`: Download this file every time the script runs
-  - `false`: Only download if not already downloaded
-- **downloaded** (boolean): 
-  - Automatically managed by the script
-  - Set to `true` when download completes successfully
-  - Set to `false` initially
+**Smart Fallback Behavior:**
+When the main URL fails:
+1. Script tries each alternative in order
+2. If an alternative succeeds, it becomes the new main URL
+3. The failed main URL is moved to the end of alternatives
+4. Configuration file is automatically updated
 
 ## Usage
 
@@ -151,15 +136,23 @@ Start
   ↓
 Check updateFile flag
   ↓
-  ├─→ updateFile = true → Download file → Update downloaded = true
+  ├─→ updateFile = true → Execute command → Update downloaded = true
   │
   └─→ updateFile = false
         ↓
       Check downloaded flag
         ↓
-        ├─→ downloaded = false → Download file → Update downloaded = true
+        ├─→ downloaded = false → Execute command → Update downloaded = true
         │
         └─→ downloaded = true → Skip (already downloaded)
+        
+If command fails:
+  ↓
+Try alternatives in order
+  ↓
+  ├─→ Alternative succeeds → Swap to main URL → Save config
+  │
+  └─→ All fail → Report failure
 ```
 
 ### Example Scenario
@@ -167,9 +160,12 @@ Check updateFile flag
 **First Run:**
 ```json
 {
-  "url": "https://example.com/file.zip",
-  "updateFile": false,
-  "downloaded": false
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://example.com/file.zip"]
+  }
 }
 ```
 → Downloads file, sets `downloaded = true`
@@ -177,9 +173,12 @@ Check updateFile flag
 **Second Run:**
 ```json
 {
-  "url": "https://example.com/file.zip",
-  "updateFile": false,
-  "downloaded": true
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": true,
+    "alternative": ["https://example.com/file.zip"]
+  }
 }
 ```
 → Skips (already downloaded)
@@ -187,57 +186,101 @@ Check updateFile flag
 **With updateFile = true:**
 ```json
 {
-  "url": "https://example.com/news.json",
-  "updateFile": true,
-  "downloaded": true
+  "curl": {
+    "url": "-L https://example.com/news.json",
+    "updateFile": true,
+    "downloaded": true,
+    "alternative": []
+  }
 }
 ```
 → Always downloads regardless of `downloaded` flag
 
-## File Organization
+**Fallback Example:**
+Main URL fails, alternative succeeds:
+```json
+// Before:
+{
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "alternative": ["https://mirror.example.com/file.zip"]
+  }
+}
 
-Downloaded files are organized in directories matching their hierarchical structure:
-
+// After automatic update:
+{
+  "wget": {
+    "url": "-c https://mirror.example.com/file.zip",
+    "alternative": ["-c https://example.com/file.zip"]
+  }
+}
 ```
-downloads/manual/
-├── operator1/
-│   ├── flag1/
-│   │   └── flag2/
-│   │       └── downloaded_file
-│   └── flag3/
-│       └── another_file
-└── operator2/
-    └── flag1/
-        └── yet_another_file
-```
 
-Space keys (" ") are filtered out from the directory structure.
+## Command Execution
+
+The script builds commands by concatenating the method with the URL field:
+
+- `wget` + `"-c https://example.com/file.zip"` → `wget -c https://example.com/file.zip`
+- `curl` + `"-L -O https://example.com/file.tar.gz"` → `curl -L -O https://example.com/file.tar.gz`
+- `git` + `"clone https://github.com/user/repo.git"` → `git clone https://github.com/user/repo.git`
+- `rsync` + `"-avz user@host:/path /dest"` → `rsync -avz user@host:/path /dest`
 
 ## Adding New Sources
 
 To add a new download source:
 
 1. Edit `data/manual_sources.json`
-2. Add your source following the hierarchical structure
-3. Ensure all sources at the same depth have the same number of flag levels (use " " keys if needed)
-4. Set appropriate `updateFile` flag
-5. Set `downloaded` to `false` initially
-6. Run the download script
+2. Add a new entry with the download method as the key
+3. Specify the URL field with any flags needed
+4. Add alternative URLs/flags if available
+5. Set `updateFile` to `false` for one-time downloads or `true` for repeated updates
+6. Set `downloaded` to `false` initially
+7. Run the download script
 
-**Example:**
+**Example - Adding a wget download:**
 
 ```json
 {
-  "sources": {
-    "new-operator": {
-      "category": {
-        "subcategory": {
-          "url": "https://example.com/file.zip",
-          "updateFile": false,
-          "downloaded": false
-        }
-      }
-    }
+  "wget": {
+    "url": "-c --no-check-certificate https://example.com/dataset.tar.gz",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "https://example.com/dataset.tar.gz",
+      "--timeout=30 https://example.com/dataset.tar.gz"
+    ]
+  }
+}
+```
+
+**Example - Adding a git clone:**
+
+```json
+{
+  "git": {
+    "url": "clone --depth 1 https://github.com/user/repo.git",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": [
+      "clone https://github.com/user/repo.git",
+      "clone --mirror https://github.com/user/repo.git"
+    ]
+  }
+}
+```
+
+**Example - Adding a curl download:**
+
+```json
+{
+  "curl": {
+    "url": "-L -O --retry 3 https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "-O https://example.com/file.zip",
+      "-C - -O https://example.com/file.zip"
+    ]
   }
 }
 ```
@@ -254,89 +297,98 @@ This validates:
 - JSON file structure
 - Required fields presence
 - Script functionality
-- Tree depth consistency
+- Command building
 
 ## Examples
 
-### Example 1: Always Update
+### Example 1: wget with resume capability
 
 ```json
 {
-  "sources": {
-    "news": {
-      "daily": {
-        "feed": {
-          "url": "https://example.com/news.json",
-          "updateFile": true,
-          "downloaded": false
-        }
-      }
-    }
+  "wget": {
+    "url": "-c --no-check-certificate https://example.com/large-file.iso",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "https://example.com/large-file.iso",
+      "--timeout=30 -c https://example.com/large-file.iso"
+    ]
   }
 }
 ```
 
-This will download the news feed every time the script runs.
+This will download once with resume capability. If the main command fails, it tries alternatives.
 
-### Example 2: Download Once
+### Example 2: curl for API updates
 
 ```json
 {
-  "sources": {
-    "datasets": {
-      "large": {
-        "archive": {
-          "url": "https://example.com/dataset.tar.gz",
-          "updateFile": false,
-          "downloaded": false
-        }
-      }
-    }
+  "curl": {
+    "url": "-L -O https://api.example.com/data/latest.json",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": [
+      "-O https://api.example.com/data/latest.json",
+      "--retry 5 -L -O https://api.example.com/data/latest.json"
+    ]
   }
 }
 ```
 
-This will download the dataset only once. After successful download, `downloaded` becomes `true` and subsequent runs will skip it.
+This downloads every time the script runs (useful for frequently updated APIs).
 
-### Example 3: Mixed Depths
+### Example 3: git repository clone
 
 ```json
 {
-  "sources": {
-    "content": {
-      "type1": {
-        "lang": {
-          "format": {
-            "url": "https://example.com/file1.zip",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      },
-      "type2": {
-        "lang": {
-          " ": {
-            "url": "https://example.com/file2.zip",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      },
-      "type3": {
-        " ": {
-          " ": {
-            "url": "https://example.com/file3.zip",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      }
-    }
+  "git": {
+    "url": "clone --depth 1 https://github.com/user/config-repo.git",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "clone https://github.com/user/config-repo.git",
+      "clone --single-branch https://github.com/user/config-repo.git"
+    ]
   }
 }
 ```
 
-This shows how to use space keys to normalize tree depth when different sources have different numbers of categorization levels.
+Clones a repository once with shallow clone for efficiency.
+
+### Example 4: rsync for backups
+
+```json
+{
+  "rsync": {
+    "url": "-avz --delete user@backup-server:/data/ /local/backup/",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": [
+      "-az user@backup-server:/data/ /local/backup/",
+      "-avz user@backup-server:/data/ /local/backup/"
+    ]
+  }
+}
+```
+
+Syncs backup every time with deletion of removed files.
+
+### Example 5: transmission-cli for torrents
+
+```json
+{
+  "transmission-cli": {
+    "url": "-w /downloads magnet:?xt=urn:btih:example",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": [
+      "magnet:?xt=urn:btih:example"
+    ]
+  }
+}
+```
+
+Downloads a torrent once.
 
 ## Differences from Mirror System
 
@@ -344,35 +396,40 @@ This shows how to use space keys to normalize tree depth when different sources 
 |---------|---------------|---------------|
 | Configuration | Static, manually curated | Dynamic, auto-updated |
 | Updates | Manual edits | Automated scraping |
-| Structure | Hierarchical with flags | Flat protocol lists |
-| Download Control | Per-file updateFile flag | N/A |
+| Structure | Flat with methods as keys | Hierarchical by protocol |
+| Download Control | Per-source updateFile flag + alternatives | N/A |
 | Tracking | Downloaded flag per source | N/A |
+| Fallback | Smart alternative swapping | Mirror rotation |
 
 ## Best Practices
 
-1. **Organize Logically**: Use meaningful operator and flag names
-2. **Consistent Depth**: Use space keys to maintain uniform tree depth within each operator
+1. **Use Appropriate Methods**: Choose the right tool (wget for HTTP, rsync for syncing, git for repos)
+2. **Add Alternatives**: Provide fallback URLs or flag combinations
 3. **Update Flags**: Set `updateFile=true` for frequently changing content, `false` for static archives
-4. **Documentation**: Add descriptions to help understand the source organization
-5. **Testing**: Always run with `--dry-run` first to verify configuration
+4. **Test First**: Always run with `--dry-run` first to verify commands
+5. **Flag Safety**: Ensure flags are compatible with the download method
 
 ## Troubleshooting
 
 ### Issue: Downloads fail
 
-**Solution**: Check URL validity and internet connection. Review error messages for specific issues.
+**Solution**: Check URL validity, internet connection, and that the download method is installed. Review error messages for specific issues.
+
+### Issue: Command not found
+
+**Solution**: Install the required download tool (e.g., `apt install wget curl rsync git transmission-cli`)
 
 ### Issue: File downloads every time despite updateFile=false
 
 **Solution**: Check if `downloaded` flag is being persisted. Ensure write permissions on the configuration file.
 
-### Issue: Inconsistent tree depth
+### Issue: Alternative fallback not working
 
-**Solution**: Add space keys (" ") to sources with fewer flags to normalize depth.
+**Solution**: Ensure alternatives are properly formatted strings. Check that alternatives contain valid commands.
 
 ### Issue: Script fails to parse JSON
 
-**Solution**: Validate JSON syntax using a JSON validator. Ensure all quotes and brackets are properly closed.
+**Solution**: Validate JSON syntax using a JSON validator. Ensure all quotes and brackets are properly closed. Make sure the `alternative` field is an array.
 
 ## Related Documentation
 

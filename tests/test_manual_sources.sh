@@ -23,27 +23,17 @@ else
 fi
 echo
 
-# Test 2: Validate JSON structure
+# Test 2: Validate JSON structure (flat with methods as keys)
 echo "Test 2: Validating JSON structure..."
 if python3 -c "
 import json
 with open('data/manual_sources.json', 'r') as f:
     data = json.load(f)
-    assert 'sources' in data, 'sources key missing'
+    # New structure: top-level keys are download methods
+    assert isinstance(data, dict), 'Root must be a dictionary'
     print(f\"✓ JSON structure valid\")
-    
-    # Count sources
-    def count_sources(d):
-        count = 0
-        if isinstance(d, dict):
-            if 'url' in d and 'updateFile' in d and 'downloaded' in d:
-                return 1
-            for v in d.values():
-                count += count_sources(v)
-        return count
-    
-    source_count = count_sources(data['sources'])
-    print(f\"  - Total sources: {source_count}\")
+    print(f\"  - Total download methods: {len(data)}\")
+    print(f\"  - Methods: {', '.join(data.keys())}\")
 " 2>&1; then
     echo "✓ JSON validation passed"
 else
@@ -57,25 +47,20 @@ echo "Test 3: Validating required fields in sources..."
 if python3 -c "
 import json
 
-def validate_source(d, path=''):
-    if isinstance(d, dict):
-        if 'url' in d:
-            # This is a leaf node, check required fields
-            assert 'updateFile' in d, f'updateFile missing at {path}'
-            assert 'downloaded' in d, f'downloaded missing at {path}'
-            assert isinstance(d['updateFile'], bool), f'updateFile must be boolean at {path}'
-            assert isinstance(d['downloaded'], bool), f'downloaded must be boolean at {path}'
-            return True
-        else:
-            # Recurse into children
-            for key, value in d.items():
-                validate_source(value, f'{path}/{key}')
-    return True
-
 with open('data/manual_sources.json', 'r') as f:
     data = json.load(f)
-    validate_source(data['sources'])
-    print('✓ All sources have required fields (url, updateFile, downloaded)')
+    
+    for method, source_info in data.items():
+        assert isinstance(source_info, dict), f'Source info for {method} must be dict'
+        assert 'url' in source_info, f'url missing for {method}'
+        assert 'updateFile' in source_info, f'updateFile missing for {method}'
+        assert 'downloaded' in source_info, f'downloaded missing for {method}'
+        assert 'alternative' in source_info, f'alternative missing for {method}'
+        assert isinstance(source_info['updateFile'], bool), f'updateFile must be bool for {method}'
+        assert isinstance(source_info['downloaded'], bool), f'downloaded must be bool for {method}'
+        assert isinstance(source_info['alternative'], list), f'alternative must be list for {method}'
+    
+    print('✓ All sources have required fields (url, updateFile, downloaded, alternative)')
 " 2>&1; then
     echo "✓ Field validation passed"
 else
@@ -112,36 +97,31 @@ else
 fi
 echo
 
-# Test 6: Test tree depth normalization
-echo "Test 6: Testing tree depth with space keys..."
+# Test 6: Test command building
+echo "Test 6: Testing command building from URL field..."
 if python3 -c "
 import json
-
-def find_max_depth(d, current_depth=0):
-    if isinstance(d, dict):
-        if 'url' in d:
-            return current_depth
-        max_d = current_depth
-        for v in d.values():
-            max_d = max(max_d, find_max_depth(v, current_depth + 1))
-        return max_d
-    return current_depth
 
 with open('data/manual_sources.json', 'r') as f:
     data = json.load(f)
     
-    # Check each operator's depth
-    operators = {}
-    for op_key, op_value in data['sources'].items():
-        depth = find_max_depth(op_value)
-        operators[op_key] = depth
-        print(f\"  Operator '{op_key}': max depth = {depth}\")
+    # Check that URL fields contain method-specific syntax
+    for method, source_info in data.items():
+        url_field = source_info['url']
+        print(f\"  {method}: {url_field}\")
+        
+        # Verify it's a string
+        assert isinstance(url_field, str), f'URL field must be string for {method}'
+        
+        # Verify alternatives are strings
+        for alt in source_info['alternative']:
+            assert isinstance(alt, str), f'Alternative must be string for {method}'
     
-    print('✓ Tree depth analysis complete')
+    print('✓ Command building validation passed')
 " 2>&1; then
-    echo "✓ Tree depth validation passed"
+    echo "✓ Command building validation passed"
 else
-    echo "✗ Tree depth validation failed"
+    echo "✗ Command building validation failed"
     exit 1
 fi
 echo
@@ -168,18 +148,11 @@ with open('data/manual_sources.json', 'r') as f:
     has_update_true = False
     has_update_false = False
     
-    def check_flags(d):
-        global has_update_true, has_update_false
-        if isinstance(d, dict):
-            if 'updateFile' in d:
-                if d['updateFile']:
-                    has_update_true = True
-                else:
-                    has_update_false = True
-            for v in d.values():
-                check_flags(v)
-    
-    check_flags(data['sources'])
+    for method, source_info in data.items():
+        if source_info['updateFile']:
+            has_update_true = True
+        else:
+            has_update_false = True
     
     assert has_update_true, 'No sources with updateFile=True found'
     assert has_update_false, 'No sources with updateFile=False found'

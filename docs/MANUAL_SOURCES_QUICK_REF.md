@@ -2,6 +2,8 @@
 
 **Purpose:** For user-specified URLs NOT covered by existing scripts (Kiwix, OpenZIM, OpenStreetMap, Internet Archive).
 
+**Structure:** Flat JSON where keys are download methods (wget, curl, rsync, git, etc.)
+
 ## File Structure
 
 ```
@@ -14,14 +16,14 @@ tests/test_manual_sources.sh - Test suite
 ## Quick Commands
 
 ```bash
-# Dry run (see what would be downloaded)
+# Dry run (see what would be executed)
 python3 scripts/download_manual_sources.py --dry-run
 
 # Download all configured sources
 python3 scripts/download_manual_sources.py
 
-# Custom config and output
-python3 scripts/download_manual_sources.py --config path/to/config.json --output /path/to/downloads
+# Custom config
+python3 scripts/download_manual_sources.py --config path/to/config.json
 
 # Help
 python3 scripts/download_manual_sources.py --help
@@ -31,22 +33,27 @@ python3 scripts/download_manual_sources.py --help
 
 ```json
 {
-  "description": "Your description here",
-  "sources": {
-    "operator_name": {
-      "flag1": {
-        "flag2": {
-          "url": "https://example.com/file.zip",
-          "updateFile": true,
-          "downloaded": false
-        }
-      }
-    }
+  "method_name": {
+    "url": "flags and URL as string",
+    "updateFile": true|false,
+    "downloaded": false,
+    "alternative": ["alternative1", "alternative2"]
   }
 }
 ```
 
 ## Key Concepts
+
+### Method Key
+Top-level key is the download tool: `wget`, `curl`, `rsync`, `git`, `transmission-cli`, etc.
+
+### URL Field
+Contains complete command arguments (flags + URL) as a single string.
+
+Examples:
+- `"-c https://example.com/file.zip"` (wget with resume)
+- `"-L -O https://example.com/file.tar.gz"` (curl with redirects)
+- `"clone https://github.com/user/repo.git"` (git clone)
 
 ### updateFile Flag
 - `true`: Always download (even if already downloaded)
@@ -57,86 +64,61 @@ python3 scripts/download_manual_sources.py --help
 - Set to `true` after successful download
 - Initially set to `false`
 
-### Space Keys (" ")
-Used to normalize tree depth when operators have different flag levels:
+### alternative Field
+Array of alternative URLs or flag combinations to try if main URL fails.
 
-```json
-{
-  "operator": {
-    "category1": {
-      "subcategory": {
-        "url": "...",
-        "updateFile": false,
-        "downloaded": false
-      }
-    },
-    "category2": {
-      " ": {
-        "url": "...",
-        "updateFile": false,
-        "downloaded": false
-      }
-    }
-  }
-}
-```
+**Smart Fallback:**
+- If main URL fails, tries alternatives in order
+- If alternative succeeds, it becomes the new main URL
+- Failed main URL moved to end of alternatives
+- Config file automatically updated
 
 ## Example Configurations
 
-### Always Update (News/Feeds)
+### wget with Resume
 ```json
 {
-  "sources": {
-    "news": {
-      "daily": {
-        "url": "https://example.com/news.json",
-        "updateFile": true,
-        "downloaded": false
-      }
-    }
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://example.com/file.zip"]
   }
 }
 ```
 
-### One-Time Download (Archives)
+### curl for APIs (Always Update)
 ```json
 {
-  "sources": {
-    "archive": {
-      "dataset": {
-        "url": "https://example.com/data.tar.gz",
-        "updateFile": false,
-        "downloaded": false
-      }
-    }
+  "curl": {
+    "url": "-L -O https://api.example.com/data.json",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["-O https://api.example.com/data.json"]
   }
 }
 ```
 
-### Mixed Depths
+### git Clone (One-Time)
 ```json
 {
-  "sources": {
-    "provider": {
-      "type1": {
-        "lang": {
-          "format": {
-            "url": "...",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      },
-      "type2": {
-        "lang": {
-          " ": {
-            "url": "...",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      }
-    }
+  "git": {
+    "url": "clone --depth 1 https://github.com/user/repo.git",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["clone https://github.com/user/repo.git"]
+  }
+}
+```
+
+### rsync Backup (Always Update)
+```json
+{
+  "rsync": {
+    "url": "-avz user@host:/data/ /backup/",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["-az user@host:/data/ /backup/"]
   }
 }
 ```
@@ -155,10 +137,10 @@ python3 -c "import json; json.load(open('data/manual_sources.json'))"
 
 | Issue | Solution |
 |-------|----------|
-| JSON parse error | Validate JSON syntax with online validator |
-| Downloads fail | Check URL validity and internet connection |
-| File not updated despite updateFile=true | Check file permissions on config file |
-| Tree depth inconsistent | Add space keys (" ") to normalize depth |
+| JSON parse error | Validate JSON syntax, check quotes and brackets |
+| Command not found | Install the required tool (wget, curl, rsync, etc.) |
+| Downloads fail | Check URL validity, internet connection, error messages |
+| Alternative not working | Ensure alternatives are properly formatted strings |
 
 ## See Also
 

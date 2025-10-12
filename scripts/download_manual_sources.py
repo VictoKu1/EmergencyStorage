@@ -3,102 +3,205 @@
 Manual Sources Downloader
 Part of EmergencyStorage - Downloads files from manually configured sources
 
-This script reads a JSON file containing manual download sources structured as a recursive dictionary
-with operators and flags, and downloads the files according to their configuration.
+This script reads a JSON file where keys are download methods (wget, curl, rsync, git, etc.)
+and executes commands with smart fallback to alternative URLs/flags.
 """
 
 import json
 import os
 import sys
-import urllib.request
+import subprocess
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, List, Tuple
 
 
-def normalize_tree_depth(data: Dict, current_depth: int = 0, max_depth: int = None) -> Tuple[Dict, int]:
+def parse_url_field(url_field: str, method: str) -> Tuple[str, List[str]]:
     """
-    Analyze and normalize tree depth to ensure all URLs are at the same level.
+    Parse the URL field to extract flags and the actual URL.
     
     Args:
-        data: The data structure to normalize
-        current_depth: Current depth in the recursion
-        max_depth: Maximum depth to normalize to
+        url_field: The url field from JSON (e.g., "-c https://example.com/file.zip")
+        method: The download method (wget, curl, rsync, git, etc.)
         
     Returns:
-        Tuple of (normalized data, max depth found)
+        Tuple of (actual_url, flags_list)
     """
-    if max_depth is None:
-        # First pass: find maximum depth
-        max_depth = find_max_depth(data)
+    parts = url_field.strip().split()
     
-    return data, max_depth
+    # Find the URL (starts with http://, https://, ftp://, or git@, or rsync://)
+    url = None
+    flags = []
+    
+    for i, part in enumerate(parts):
+        if part.startswith(('http://', 'https://', 'ftp://', 'git@', 'rsync://', 'ssh://')):
+            url = part
+            flags = parts[:i]
+            # Everything after URL could be additional args (like destination)
+            if i + 1 < len(parts):
+                flags.extend(parts[i+1:])
+            break
+        elif method == 'git' and part in ['clone', 'pull', 'fetch']:
+            # For git commands, the subcommand comes first
+            flags = parts[:i+1]
+            if i + 1 < len(parts):
+                url = parts[i+1]
+                if i + 2 < len(parts):
+                    flags.extend(parts[i+2:])
+            break
+    
+    if url is None:
+        # If no URL found, assume the whole string is the URL
+        url = url_field
+        flags = []
+    
+    return url, flags
 
 
-def find_max_depth(data: Any, current_depth: int = 0) -> int:
+def build_command(method: str, url_field: str) -> List[str]:
     """
-    Find the maximum depth of the tree structure.
+    Build the command to execute based on method and url field.
     
     Args:
-        data: The data structure to analyze
-        current_depth: Current depth in recursion
+        method: Download method (wget, curl, rsync, git, etc.)
+        url_field: The url field containing flags and URL
         
     Returns:
-        Maximum depth found
+        List of command parts ready for subprocess
     """
-    if not isinstance(data, dict):
-        return current_depth
-    
-    # Check if this is a leaf node (contains url)
-    if "url" in data and "updateFile" in data:
-        return current_depth
-    
-    # Recurse into children
-    max_child_depth = current_depth
-    for key, value in data.items():
-        child_depth = find_max_depth(value, current_depth + 1)
-        max_child_depth = max(max_child_depth, child_depth)
-    
-    return max_child_depth
+    parts = url_field.strip().split()
+    return [method] + parts
 
 
-def traverse_sources(data: Dict, path: List[str] = None) -> List[Tuple[List[str], Dict]]:
+def execute_download(method: str, url_field: str, dry_run: bool = False) -> bool:
     """
-    Traverse the recursive dictionary structure and extract all download sources.
+    Execute the download command.
     
     Args:
-        data: The data structure to traverse
-        path: Current path in the tree (list of keys)
+        method: Download method (wget, curl, rsync, git, etc.)
+        url_field: The url field containing flags and URL
+        dry_run: If True, only show what would be executed
         
     Returns:
-        List of tuples containing (path, source_info) where source_info has url, updateFile, downloaded
+        True if successful, False otherwise
     """
-    if path is None:
-        path = []
+    command = build_command(method, url_field)
     
-    results = []
+    if dry_run:
+        print(f"  [DRY RUN] Would execute: {' '.join(command)}")
+        return True
     
-    # Check if this is a leaf node (contains url)
-    if isinstance(data, dict) and "url" in data and "updateFile" in data:
-        return [(path, data)]
-    
-    # Recurse into children
-    if isinstance(data, dict):
-        for key, value in data.items():
-            results.extend(traverse_sources(value, path + [key]))
-    
-    return results
+    try:
+        print(f"  Executing: {' '.join(command)}")
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout
+        )
+        
+        if result.returncode == 0:
+            print("  ✓ Command executed successfully")
+            return True
+        else:
+            print(f"  ✗ Command failed with return code {result.returncode}")
+            if result.stderr:
+                print(f"  Error: {result.stderr[:200]}")
+            return False
+            
+    except subprocess.TimeoutExpired:
+        print("  ✗ Command timed out")
+        return False
+    except Exception as e:
+        print(f"  ✗ Error executing command: {e}")
+        return False
 
 
-def should_download(source_info: Dict, filepath: Path) -> bool:
+def try_alternatives(method: str, source_info: Dict, config_path: Path, dry_run: bool = False) -> bool:
     """
-    Determine if a file should be downloaded based on updateFile flag and downloaded status.
+    Try alternative URLs/flags if the main URL fails.
+    
+    Args:
+        method: Download method
+        source_info: Dictionary containing url, updateFile, downloaded, alternative
+        config_path: Path to the JSON configuration file
+        dry_run: If True, only show what would be executed
+        
+    Returns:
+        True if any attempt succeeded, False otherwise
+    """
+    alternatives = source_info.get("alternative", [])
+    
+    if not alternatives:
+        return False
+    
+    print(f"  Trying {len(alternatives)} alternative(s)...")
+    
+    for i, alt_url in enumerate(alternatives):
+        print(f"  Alternative {i+1}/{len(alternatives)}: {alt_url}")
+        
+        if execute_download(method, alt_url, dry_run):
+            # Swap the working alternative with the failed main URL
+            if not dry_run:
+                print(f"  → Updating config: moving working alternative to main URL")
+                old_url = source_info["url"]
+                source_info["url"] = alt_url
+                # Add failed URL to end of alternatives
+                alternatives.remove(alt_url)
+                alternatives.append(old_url)
+                source_info["alternative"] = alternatives
+                
+                # Save updated config
+                save_config(config_path, load_config(config_path))
+            
+            return True
+    
+    return False
+
+
+def load_config(config_path: Path) -> Dict:
+    """Load the JSON configuration."""
+    with open(config_path, 'r') as f:
+        return json.load(f)
+
+
+def save_config(config_path: Path, config: Dict):
+    """Save the JSON configuration."""
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=2)
+
+
+def update_downloaded_status(config_path: Path, method: str, status: bool):
+    """
+    Update the downloaded status for a specific source.
+    
+    Args:
+        config_path: Path to the JSON configuration file
+        method: The download method key
+        status: Downloaded status (True/False)
+    """
+    try:
+        config = load_config(config_path)
+        
+        if method in config:
+            config[method]["downloaded"] = status
+            save_config(config_path, config)
+            print(f"  Updated downloaded status to {status}")
+        else:
+            print(f"  Warning: Method '{method}' not found in config", file=sys.stderr)
+            
+    except Exception as e:
+        print(f"  Warning: Could not update downloaded status: {e}", file=sys.stderr)
+
+
+def should_download(source_info: Dict) -> bool:
+    """
+    Determine if a download should be executed.
     
     Args:
         source_info: Dictionary containing url, updateFile, and downloaded flags
-        filepath: Path where the file would be saved
         
     Returns:
-        True if file should be downloaded, False otherwise
+        True if should download, False otherwise
     """
     update_file = source_info.get("updateFile", False)
     already_downloaded = source_info.get("downloaded", False)
@@ -107,172 +210,71 @@ def should_download(source_info: Dict, filepath: Path) -> bool:
     if update_file:
         return True
     
-    # If updateFile is False and file was already downloaded, skip
+    # If updateFile is False and already downloaded, skip
     if not update_file and already_downloaded:
         return False
     
-    # If updateFile is False but file wasn't downloaded yet, download it
-    if not update_file and not already_downloaded:
-        return True
-    
-    return False
+    # If updateFile is False but not downloaded yet, download it
+    return True
 
 
-def download_file(url: str, filepath: Path, timeout: int = 30) -> bool:
+def process_manual_sources(config_path: Path, dry_run: bool = False):
     """
-    Download a file from URL to filepath.
-    
-    Args:
-        url: URL to download from
-        filepath: Path to save the file
-        timeout: Connection timeout in seconds
-        
-    Returns:
-        True if download successful, False otherwise
-    """
-    try:
-        print(f"  Downloading: {url}")
-        print(f"  Saving to: {filepath}")
-        
-        # Ensure directory exists
-        filepath.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Download with progress indication
-        with urllib.request.urlopen(url, timeout=timeout) as response:
-            total_size = response.headers.get('Content-Length')
-            if total_size:
-                print(f"  Size: {int(total_size) / (1024*1024):.2f} MB")
-            
-            with open(filepath, 'wb') as f:
-                chunk_size = 8192
-                downloaded = 0
-                while True:
-                    chunk = response.read(chunk_size)
-                    if not chunk:
-                        break
-                    f.write(chunk)
-                    downloaded += len(chunk)
-                    if total_size:
-                        progress = (downloaded / int(total_size)) * 100
-                        print(f"\r  Progress: {progress:.1f}%", end='', flush=True)
-        
-        print()  # New line after progress
-        return True
-        
-    except Exception as e:
-        print(f"  Error downloading {url}: {e}", file=sys.stderr)
-        return False
-
-
-def update_downloaded_status(config_path: Path, path: List[str], status: bool):
-    """
-    Update the downloaded status for a specific source in the JSON config.
-    
-    Args:
-        config_path: Path to the JSON configuration file
-        path: Path to the source in the tree structure
-        status: Downloaded status (True/False)
-    """
-    try:
-        with open(config_path, 'r') as f:
-            config = json.load(f)
-        
-        # Navigate to the source
-        current = config
-        for key in path:
-            if key in current:
-                current = current[key]
-            else:
-                print(f"Warning: Could not find path {path} in config", file=sys.stderr)
-                return
-        
-        # Update downloaded status
-        current["downloaded"] = status
-        
-        # Save back to file
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=2)
-        
-        print(f"  Updated downloaded status to {status}")
-        
-    except Exception as e:
-        print(f"  Warning: Could not update downloaded status: {e}", file=sys.stderr)
-
-
-def process_manual_sources(config_path: Path, download_dir: Path, dry_run: bool = False):
-    """
-    Process manual sources configuration and download files.
+    Process manual sources configuration and execute downloads.
     
     Args:
         config_path: Path to the manual sources JSON configuration
-        download_dir: Directory to save downloaded files
         dry_run: If True, only show what would be downloaded without actually downloading
     """
     try:
-        with open(config_path, 'r') as f:
-            config = json.load(f)
+        config = load_config(config_path)
         
-        # Get sources section
-        sources = config.get("sources", {})
-        
-        if not sources:
+        if not config:
             print("No sources found in configuration")
             return
         
-        # Traverse and extract all download sources
-        all_sources = traverse_sources(sources, ["sources"])
-        
-        print(f"Found {len(all_sources)} download sources")
+        print(f"Found {len(config)} download source(s)")
         print()
         
-        # Process each source
+        # Process each method
         downloaded_count = 0
         skipped_count = 0
         failed_count = 0
         
-        for path, source_info in all_sources:
-            # Create a readable path string (skip 'sources' root and empty strings)
-            readable_path = " > ".join([p for p in path[1:] if p.strip()])
-            print(f"Processing: {readable_path}")
-            
-            url = source_info.get("url", "")
-            if not url:
-                print("  No URL specified, skipping")
-                skipped_count += 1
+        for method, source_info in config.items():
+            # Validate source_info structure
+            if not isinstance(source_info, dict):
+                print(f"Warning: Invalid structure for method '{method}', skipping")
                 continue
             
-            # Determine filename from URL
-            filename = url.split("/")[-1]
-            if not filename:
-                filename = "download"
+            if "url" not in source_info:
+                print(f"Warning: No URL for method '{method}', skipping")
+                continue
             
-            # Create subdirectory based on path
-            subdir = download_dir / "/".join([p for p in path[1:] if p.strip()])
-            filepath = subdir / filename
+            print(f"Processing: {method}")
+            url_field = source_info.get("url", "")
+            print(f"  URL field: {url_field}")
             
             # Check if should download
-            if not should_download(source_info, filepath):
+            if not should_download(source_info):
                 print(f"  Skipping (already downloaded, updateFile=false)")
                 skipped_count += 1
                 print()
                 continue
             
-            if dry_run:
-                print(f"  [DRY RUN] Would download: {url}")
-                print(f"  [DRY RUN] Would save to: {filepath}")
-                print()
-                continue
+            # Try main URL
+            success = execute_download(method, url_field, dry_run)
             
-            # Attempt download
-            success = download_file(url, filepath, timeout=30)
+            # If failed, try alternatives
+            if not success and not dry_run:
+                print("  Main URL failed, trying alternatives...")
+                success = try_alternatives(method, source_info, config_path, dry_run)
             
             if success:
-                print("  ✓ Download successful")
                 downloaded_count += 1
-                # Update downloaded status in config
-                update_downloaded_status(config_path, path, True)
+                if not dry_run:
+                    update_downloaded_status(config_path, method, True)
             else:
-                print("  ✗ Download failed")
                 failed_count += 1
             
             print()
@@ -284,7 +286,7 @@ def process_manual_sources(config_path: Path, download_dir: Path, dry_run: bool 
         print(f"  Downloaded: {downloaded_count}")
         print(f"  Skipped: {skipped_count}")
         print(f"  Failed: {failed_count}")
-        print(f"  Total: {len(all_sources)}")
+        print(f"  Total: {len(config)}")
         
     except FileNotFoundError:
         print(f"Error: Configuration file not found: {config_path}", file=sys.stderr)
@@ -311,12 +313,6 @@ def main():
         help="Path to manual sources JSON configuration file"
     )
     parser.add_argument(
-        "--output",
-        type=str,
-        default=None,
-        help="Output directory for downloads"
-    )
-    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be downloaded without actually downloading"
@@ -328,21 +324,19 @@ def main():
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent
     
-    # Default paths
+    # Default path
     config_path = Path(args.config) if args.config else repo_root / "data" / "manual_sources.json"
-    download_dir = Path(args.output) if args.output else repo_root / "downloads" / "manual"
     
     print("Manual Sources Downloader")
     print("="*50)
     print(f"Configuration: {config_path}")
-    print(f"Download directory: {download_dir}")
     if args.dry_run:
         print("Mode: DRY RUN (no actual downloads)")
     print("="*50)
     print()
     
     # Process downloads
-    process_manual_sources(config_path, download_dir, dry_run=args.dry_run)
+    process_manual_sources(config_path, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

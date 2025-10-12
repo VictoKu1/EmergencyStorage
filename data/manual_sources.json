@@ -1,52 +1,26 @@
 {
-  "description": "Manual download sources with recursive flag structure - for user-specified URLs not covered by existing scripts",
-  "sources": {
-    "custom_dataset": {
-      "research": {
-        "data": {
-          "v1": {
-            "url": "https://example.com/datasets/research-data-v1.tar.gz",
-            "updateFile": true,
-            "downloaded": false
-          }
-        },
-        "models": {
-          "v2": {
-            "url": "https://example.com/datasets/ml-models-v2.zip",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      },
-      "documentation": {
-        "latest": {
-          " ": {
-            "url": "https://example.com/docs/latest/manual.pdf",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      }
-    },
-    "personal_backup": {
-      "configs": {
-        "dotfiles": {
-          " ": {
-            "url": "https://example.com/backup/dotfiles.tar.gz",
-            "updateFile": true,
-            "downloaded": false
-          }
-        }
-      },
-      "media": {
-        " ": {
-          " ": {
-            "url": "https://example.com/backup/media-archive.zip",
-            "updateFile": false,
-            "downloaded": false
-          }
-        }
-      }
-    }
+  "wget": {
+    "url": "-c https://example.com/datasets/research-data-v1.tar.gz",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://example.com/datasets/research-data-v1.tar.gz", "-O /tmp/data.tar.gz https://example.com/datasets/research-data-v1.tar.gz"]
+  },
+  "curl": {
+    "url": "-L -O https://example.com/docs/manual.pdf",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["https://example.com/docs/manual.pdf", "-C - https://example.com/docs/manual.pdf"]
+  },
+  "rsync": {
+    "url": "-avz https://example.com/backup/dotfiles.tar.gz /destination/",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["-az https://example.com/backup/dotfiles.tar.gz /destination/", "https://example.com/backup/dotfiles.tar.gz /destination/"]
+  },
+  "git": {
+    "url": "clone https://github.com/example/repo.git",
+    "updateFile": true,
+    "downloaded": false,
+    "alternative": ["clone --depth 1 https://github.com/example/repo.git", "clone --mirror https://github.com/example/repo.git"]
   }
 }
