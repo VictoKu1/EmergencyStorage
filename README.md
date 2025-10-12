@@ -70,7 +70,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 | Source | Size | Description |
 |--------|------|-------------|
-| **Kiwix** | ~7TB | Complete offline Wikipedia and educational content |
+| **Kiwix** | ~7TB (10TB for the complete repository)| Complete offline Wikipedia and educational content |
 | **OpenZIM** | ~1TB | Compressed offline content (Wikipedia, educational materials) |
 | **OpenStreetMap** | ~70GB | Complete planet mapping data |
 | **IA Software** | 50GB-500GB | Preserved software, games, and applications |
@@ -78,7 +78,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 | **IA Movies** | 500GB-5TB | Public domain films and documentaries |
 | **IA Texts** | 100GB-2TB | Books, research papers, and academic texts |
 
-**Recommended Storage**: 10-15TB+ for all sources
+**Recommended Storage**: 10-17TB+ for all sources
 
 ## 🛠️ Available Options
 
