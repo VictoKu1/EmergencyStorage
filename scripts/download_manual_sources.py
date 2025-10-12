@@ -15,48 +15,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 
-def parse_url_field(url_field: str, method: str) -> Tuple[str, List[str]]:
-    """
-    Parse the URL field to extract flags and the actual URL.
-    
-    Args:
-        url_field: The url field from JSON (e.g., "-c https://example.com/file.zip")
-        method: The download method (wget, curl, rsync, git, etc.)
-        
-    Returns:
-        Tuple of (actual_url, flags_list)
-    """
-    parts = url_field.strip().split()
-    
-    # Find the URL (starts with http://, https://, ftp://, or git@, or rsync://)
-    url = None
-    flags = []
-    
-    for i, part in enumerate(parts):
-        if part.startswith(('http://', 'https://', 'ftp://', 'git@', 'rsync://', 'ssh://')):
-            url = part
-            flags = parts[:i]
-            # Everything after URL could be additional args (like destination)
-            if i + 1 < len(parts):
-                flags.extend(parts[i+1:])
-            break
-        elif method == 'git' and part in ['clone', 'pull', 'fetch']:
-            # For git commands, the subcommand comes first
-            flags = parts[:i+1]
-            if i + 1 < len(parts):
-                url = parts[i+1]
-                if i + 2 < len(parts):
-                    flags.extend(parts[i+2:])
-            break
-    
-    if url is None:
-        # If no URL found, assume the whole string is the URL
-        url = url_field
-        flags = []
-    
-    return url, flags
-
-
 def build_command(method: str, url_field: str) -> List[str]:
     """
     Build the command to execute based on method and url field.
@@ -116,13 +74,14 @@ def execute_download(method: str, url_field: str, dry_run: bool = False) -> bool
         return False
 
 
-def try_alternatives(method: str, source_info: Dict, config_path: Path, dry_run: bool = False) -> bool:
+def try_alternatives(method: str, source_info: Dict, config: Dict, config_path: Path, dry_run: bool = False) -> bool:
     """
     Try alternative URLs/flags if the main URL fails.
     
     Args:
         method: Download method
         source_info: Dictionary containing url, updateFile, downloaded, alternative
+        config: The already loaded configuration dictionary
         config_path: Path to the JSON configuration file
         dry_run: If True, only show what would be executed
         
@@ -150,8 +109,8 @@ def try_alternatives(method: str, source_info: Dict, config_path: Path, dry_run:
                 alternatives.append(old_url)
                 source_info["alternative"] = alternatives
                 
-                # Save updated config
-                save_config(config_path, load_config(config_path))
+                # Save updated config (config already passed in, no need to reload)
+                save_config(config_path, config)
             
             return True
     
@@ -170,18 +129,17 @@ def save_config(config_path: Path, config: Dict):
         json.dump(config, f, indent=2)
 
 
-def update_downloaded_status(config_path: Path, method: str, status: bool):
+def update_downloaded_status(config: Dict, config_path: Path, method: str, status: bool):
     """
     Update the downloaded status for a specific source.
     
     Args:
+        config: The already loaded configuration dictionary
         config_path: Path to the JSON configuration file
         method: The download method key
         status: Downloaded status (True/False)
     """
     try:
-        config = load_config(config_path)
-        
         if method in config:
             config[method]["downloaded"] = status
             save_config(config_path, config)
@@ -268,12 +226,12 @@ def process_manual_sources(config_path: Path, dry_run: bool = False):
             # If failed, try alternatives
             if not success and not dry_run:
                 print("  Main URL failed, trying alternatives...")
-                success = try_alternatives(method, source_info, config_path, dry_run)
+                success = try_alternatives(method, source_info, config, config_path, dry_run)
             
             if success:
                 downloaded_count += 1
                 if not dry_run:
-                    update_downloaded_status(config_path, method, True)
+                    update_downloaded_status(config, config_path, method, True)
             else:
                 failed_count += 1
             
