@@ -109,6 +109,7 @@ Format: `minute hour day month day-of-week`
 3. **Adjust frequencies**: Match update frequency to how often content changes
 4. **Storage space**: Ensure adequate space before enabling all resources
 5. **Network bandwidth**: Consider your bandwidth when scheduling frequent updates
+6. **Restart persistence**: All scheduling methods (GitHub Actions, cron, systemd) automatically persist through system restarts
 
 ## See Also
 

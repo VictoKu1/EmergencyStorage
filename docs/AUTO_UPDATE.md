@@ -260,6 +260,8 @@ For running on a local machine or server:
 
 3. **Save and exit**
 
+**Note:** Cron jobs persist through system restarts automatically. Once added to your crontab, they will continue to run according to schedule even after rebooting.
+
 ### Option 3: systemd Timer (Linux)
 
 Create a systemd timer for more control:
@@ -295,6 +297,59 @@ Create a systemd timer for more control:
    sudo systemctl enable emergency-storage-update.timer
    sudo systemctl start emergency-storage-update.timer
    ```
+
+**Note:** The `Persistent=true` setting ensures that if the system was powered off when a scheduled update should have run, the timer will trigger the update immediately upon system restart. The `enable` command ensures the timer starts automatically on every boot.
+
+## Persistence After System Restart
+
+All three scheduling methods are designed to survive system restarts:
+
+### GitHub Actions
+- **Persistence:** Fully automatic - runs on GitHub's infrastructure
+- **After Restart:** No action needed - continues running on schedule
+- **Best for:** Cloud-hosted repositories, users who don't want to manage local services
+
+### Cron Jobs
+- **Persistence:** Automatic - crontab entries persist through reboots
+- **After Restart:** No action needed - cron daemon starts automatically on boot
+- **Verification:** Run `crontab -l` to confirm your jobs are still scheduled
+- **Best for:** Simple scheduling on always-on servers or desktops
+
+### systemd Timers
+- **Persistence:** Automatic when enabled with `systemctl enable`
+- **After Restart:** Timer starts automatically on boot
+- **Missed Runs:** With `Persistent=true`, runs immediately if system was off during scheduled time
+- **Verification:** Run `systemctl status emergency-storage-update.timer` to check status
+- **Best for:** Linux systems requiring advanced control and reliability
+
+### Ensuring Automatic Startup
+
+To verify your automatic updates will run after restart:
+
+**For Cron:**
+```bash
+# Check if cron service is enabled
+systemctl status cron
+
+# List your scheduled jobs
+crontab -l
+```
+
+**For systemd:**
+```bash
+# Check if timer is enabled (will start on boot)
+systemctl is-enabled emergency-storage-update.timer
+
+# Check timer status
+systemctl status emergency-storage-update.timer
+
+# View next scheduled run
+systemctl list-timers emergency-storage-update.timer
+```
+
+**For GitHub Actions:**
+- No local verification needed - managed by GitHub
+- Check workflow history in your repository's Actions tab
 
 ## GitHub Actions Integration
 

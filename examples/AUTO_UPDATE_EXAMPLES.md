@@ -231,6 +231,8 @@ For each configuration, you can set up a separate cron job:
 0 4 1 * * cd /path/to/repo && python3 scripts/auto_update.py --config config_full.json
 ```
 
+**Note:** Cron jobs persist through system restarts automatically. Once added to crontab, they continue running on schedule after reboots.
+
 ## See Also
 
 - [AUTO_UPDATE.md](../docs/AUTO_UPDATE.md) - Full documentation

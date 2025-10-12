@@ -89,6 +89,8 @@ on:
 - Monthly on 1st: `0 2 1 * *`
 - Every 6 hours: `0 */6 * * *`
 
+**Persistence:** Runs on GitHub's infrastructure - always persists through restarts.
+
 ### Local Cron Job
 
 ```bash
@@ -98,6 +100,21 @@ crontab -e
 # Add line (daily at 02:00)
 0 2 * * * cd /path/to/EmergencyStorage && python3 scripts/auto_update.py
 ```
+
+**Persistence:** Cron jobs automatically persist through system restarts.
+
+### systemd Timer
+
+```bash
+# Enable timer (persists through restarts)
+sudo systemctl enable emergency-storage-update.timer
+sudo systemctl start emergency-storage-update.timer
+
+# Check status
+systemctl status emergency-storage-update.timer
+```
+
+**Persistence:** With `systemctl enable`, timer starts automatically on every boot. `Persistent=true` in timer file ensures missed runs execute after restart.
 
 ## Common Settings
 
