@@ -4,7 +4,7 @@
 # This script coordinates multiple specialized download scripts for different data sources
 # 
 # Usage: ./emergency_storage.sh [--sources] [--allow_download_from_mirror] [drive_address]
-# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources
+# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources, git-repos
 
 set -e  # Exit on any error
 
@@ -25,7 +25,7 @@ show_usage() {
     echo "If only a directory path is provided, defaults to downloading all sources to that directory."
     echo ""
     echo -e "${COLOR_GREEN}Available Sources:${COLOR_RESET}"
-    echo "  --all            Download from all sources (default, excludes manual-sources)"
+    echo "  --all            Download from all sources (default, excludes manual-sources and git-repos)"
     echo "  --kiwix          Download Kiwix mirror (offline Wikipedia, etc.)"
     echo "  --openzim        Download OpenZIM files (educational content)"
     echo "  --openstreetmap  Download OpenStreetMap data (world map data)"
@@ -34,6 +34,7 @@ show_usage() {
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
     echo "  --manual-sources Download from manually configured JSON sources (not part of --all)"
+    echo "  --git-repos      Clone/update Git repositories from JSON configuration (not part of --all)"
     echo ""
     echo -e "${COLOR_GREEN}Options:${COLOR_RESET}"
     echo "  --allow_download_from_mirror  Allow downloading from alternative Kiwix mirrors"
@@ -46,6 +47,7 @@ show_usage() {
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
     echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
     echo "  $0 --manual-sources /mnt/external_drive  # Download from manual sources JSON"
+    echo "  $0 --git-repos /mnt/external_drive       # Clone/update Git repositories"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive"
     echo "  $0 --all --allow_download_from_mirror /mnt/external_drive"
     echo ""
@@ -196,6 +198,33 @@ download_manual_sources() {
     fi
 }
 
+# Function to download Git repositories
+download_git_repos() {
+    local drive_path="$1"
+    
+    log_info "Cloning/updating Git repositories..."
+    
+    # Setup virtual environment
+    if ! setup_venv; then
+        log_error "Failed to setup Python virtual environment"
+        return 1
+    fi
+    
+    # Define git repos directory
+    local git_repos_dir="$drive_path/git_repos"
+    
+    log_info "Git repositories directory: $git_repos_dir"
+    
+    # Run the Python script with venv
+    if "$SCRIPT_DIR/.venv/bin/python3" "$SCRIPT_DIR/scripts/download_git_repos.py" --dest "$git_repos_dir"; then
+        log_success "Git repositories download completed"
+        return 0
+    else
+        log_error "Git repositories download failed"
+        return 1
+    fi
+}
+
 # Function to download from all sources
 download_all() {
     local drive_path="$1"
@@ -264,7 +293,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git-repos)
                 if [ -n "$source" ]; then
                     log_error "Multiple source options specified"
                     show_usage
@@ -354,6 +383,9 @@ main() {
             ;;
         --manual-sources)
             download_manual_sources "$drive_path"
+            ;;
+        --git-repos)
+            download_git_repos "$drive_path"
             ;;
         *)
             log_error "Invalid source option $source"
