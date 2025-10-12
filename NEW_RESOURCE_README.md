@@ -216,9 +216,13 @@ Add `set -x` after `set -e` to see detailed execution traces.
 
 After implementing your resource:
 1. Test thoroughly in various scenarios
-2. Update the main README.md with your resource information
-3. Consider contributing your resource back to the project
-4. Document any special requirements or considerations
+2. Update the main `README.md` with your resource information
+3. Update `docs/STORAGE.md` with storage requirements and content descriptions
+4. Update `docs/USAGE.md` with usage examples
+5. Consider contributing your resource back to the project
+6. Document any special requirements or considerations
+
+See [Contributing Guide](docs/CONTRIBUTING.md) for more information on the contribution process.
 
 ## Template Completion Checklist
 
@@ -234,5 +238,7 @@ After implementing your resource:
 - [ ] Tested script independently with various inputs
 - [ ] Tested script integration with main `emergency_storage.sh`
 - [ ] Updated main `README.md` with resource information
+- [ ] Updated `docs/STORAGE.md` with storage requirements
+- [ ] Updated `docs/USAGE.md` with usage examples
 - [ ] Verified error handling and edge cases
 - [ ] Documented any special requirements or dependencies

@@ -179,6 +179,7 @@ In your resource script:
 
 ```bash
 # Load mirrors from JSON
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MIRROR_FILE="$SCRIPT_DIR/../data/mirrors/your-source.json"
 if [ -f "$MIRROR_FILE" ]; then
     # Parse JSON and load mirrors
@@ -228,4 +229,7 @@ python3 scripts/update_mirrors.py
 
 ## For More Information
 
-See `data/mirrors/README.md` for technical details about the mirror system structure and JSON format.
+See:
+- `data/mirrors/README.md` for technical details about the mirror system structure and JSON format
+- [Main README](../README.md) for project overview
+- [Error Handling](ERROR_HANDLING.md) for debugging mirror issues

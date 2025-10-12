@@ -156,7 +156,7 @@ Clean code organization with proper documentation:
 - Consistent coding style
 - Proper error propagation
 
-## Using the Logging System
+### Using the Logging System
 
 ### In Your Scripts
 
@@ -164,7 +164,8 @@ When creating new data sources, use the logging functions from `scripts/common.s
 
 ```bash
 # Source the common utilities
-source "$SCRIPT_DIR/scripts/common.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
 
 # Use logging functions
 log_info "Starting download..."

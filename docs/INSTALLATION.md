@@ -59,6 +59,24 @@ python3 -m venv --help
 
 ### 5. Setup Python Virtual Environment (Optional but Recommended)
 
+For scripts that use Python (manual sources, Git repositories, automatic updates):
+
+```bash
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Deactivate when done (optional)
+deactivate
+```
+
+**Note**: The main script automatically creates and manages the virtual environment for manual sources. This step is optional for manual usage of Python scripts.
+
 The Python virtual environment will be automatically created when you first use the `--manual-sources` flag. However, you can set it up manually:
 
 ```bash
