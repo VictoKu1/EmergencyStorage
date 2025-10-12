@@ -3,7 +3,7 @@ name: Update Mirror Lists
 on:
   schedule:
     # Run weekly at 00:00 UTC on Sundays
-    - cron: '0 0 * * 0'
+    - cron: '5 0 * * 0'
   workflow_dispatch:  # Allow manual triggering
 
 permissions:
