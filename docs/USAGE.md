@@ -23,14 +23,15 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 
 ### Available Sources
 
-- `--all` - Download from all sources (default when no flags specified)
+- `--all` - Download from all sources (default when no flags specified, excludes manual-sources)
 - `--kiwix` - Download Kiwix mirror only
 - `--openzim` - Download OpenZIM files only
 - `--openstreetmap` - Download OpenStreetMap data only
 - `--ia-software` - Download Internet Archive software collection only
 - `--ia-music` - Download Internet Archive music collection only
 - `--ia-movies` - Download Internet Archive movies collection only
-- `--ia-texts` - Download Internet Archive scientific texts only  
+- `--ia-texts` - Download Internet Archive scientific texts only
+- `--manual-sources` - Download from manually configured JSON sources (must be selected explicitly, not part of --all)  
 
 ### Examples
 
@@ -62,6 +63,9 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 # Advanced: Download only Internet Archive texts to external drive
 ./emergency_storage.sh --ia-texts /mnt/external_drive
 
+# Advanced: Download from manual sources JSON configuration
+./emergency_storage.sh --manual-sources /mnt/external_drive
+
 # Advanced: Explicitly download everything to external drive
 ./emergency_storage.sh --all /mnt/external_drive
 
@@ -86,6 +90,51 @@ chmod +x scripts/*.sh
 ./scripts/ia-movies.sh /mnt/external_drive         # IA Movies collection
 ./scripts/ia-texts.sh /mnt/external_drive          # IA Texts collection
 ```
+
+## Manual Sources Usage
+
+The `--manual-sources` flag allows you to download files from manually configured sources defined in `data/manual_sources.json`. This feature:
+
+- **Must be explicitly selected** - It is NOT part of `--all` to prevent accidental downloads
+- **Uses Python virtual environment** - Automatically creates and manages a Python venv
+- **Supports multiple download methods** - wget, curl, rsync, git, and more
+- **Smart fallback** - Tries alternative URLs if the main URL fails
+
+### Setup and Prerequisites
+
+The script automatically:
+1. Creates a Python virtual environment (`.venv/`) in the repository root
+2. Installs any required Python packages from `requirements.txt`
+3. Validates that `python3` and `python3-venv` are installed
+
+### Using Manual Sources
+
+```bash
+# Download from manual sources to external drive
+./emergency_storage.sh --manual-sources /mnt/external_drive
+
+# Configure your sources in data/manual_sources.json
+# See docs/MANUAL_SOURCES.md for configuration details
+```
+
+### Manual Sources Configuration
+
+Edit `data/manual_sources.json` to configure your download sources. Example:
+
+```json
+{
+  "wget": {
+    "url": "-c https://example.com/file.zip",
+    "updateFile": false,
+    "downloaded": false,
+    "alternative": ["https://mirror.example.com/file.zip"]
+  }
+}
+```
+
+For detailed documentation on configuring manual sources, see:
+- [Manual Sources Documentation](MANUAL_SOURCES.md)
+- [Manual Sources Quick Reference](MANUAL_SOURCES_QUICK_REF.md)
 
 ## Tips for Optimal Usage
 

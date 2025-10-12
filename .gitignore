@@ -28,6 +28,11 @@ __pycache__/
 *$py.class
 *.so
 
+# Python virtual environment
+.venv/
+venv/
+env/
+
 # Editor/IDE files
 .vscode/
 .idea/

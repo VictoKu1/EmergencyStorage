@@ -1,0 +1,12 @@
+# Python requirements for EmergencyStorage
+# Currently uses only standard library modules, but this file is provided for future extensibility
+
+# No external dependencies required at this time
+# The download_manual_sources.py script uses only:
+# - json
+# - os
+# - sys
+# - subprocess
+# - pathlib
+# - typing
+# All of which are part of Python's standard library

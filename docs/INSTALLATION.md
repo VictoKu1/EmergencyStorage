@@ -13,7 +13,9 @@
 - `rsync` - for Kiwix mirror and OpenZIM
 - `curl` - for OpenStreetMap download and Internet Archive collections
 - `wget` - optional, for HTTP/FTP mirror fallback
-- `python3` - for dynamic mirror updates (optional but recommended)
+- `python3` - for dynamic mirror updates and manual sources (required)
+- `python3-venv` - for Python virtual environment (required for manual sources)
+- `python3-pip` - for installing Python packages (included with python3-venv)
 
 ## Installation Steps
 
@@ -22,7 +24,7 @@
 #### Debian/Ubuntu
 ```bash
 sudo apt-get update
-sudo apt-get install rsync curl wget python3
+sudo apt-get install rsync curl wget python3 python3-venv python3-pip
 ```
 
 #### Other Linux Distributions
@@ -49,7 +51,25 @@ chmod +x emergency_storage.sh scripts/*.sh
 
 # Test individual scripts
 ./scripts/kiwix.sh --help 2>/dev/null || echo "Test basic execution"
+
+# Verify Python and venv are installed
+python3 --version
+python3 -m venv --help
 ```
+
+### 5. Setup Python Virtual Environment (Optional but Recommended)
+
+The Python virtual environment will be automatically created when you first use the `--manual-sources` flag. However, you can set it up manually:
+
+```bash
+# The script will do this automatically, but you can also do it manually:
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+deactivate
+```
+
+**Note**: The virtual environment (`.venv/`) is automatically managed by the main script when using `--manual-sources`. You don't need to activate it manually.
 
 ## Optional Tools
 
@@ -91,6 +111,22 @@ sudo chown -R $USER:$USER /mnt/external_drive
 ```bash
 # Check if tools are installed
 which rsync curl wget python3
+
+# Check for Python venv module
+python3 -m venv --help
+
+# Check for pip
+python3 -m pip --version
+```
+
+**Python Virtual Environment Issues**
+```bash
+# If venv creation fails, ensure python3-venv is installed
+sudo apt-get install python3-venv python3-pip
+
+# If .venv directory is corrupted, remove and recreate
+rm -rf .venv
+./emergency_storage.sh --manual-sources /mnt/external_drive
 ```
 
 **Permission Issues**

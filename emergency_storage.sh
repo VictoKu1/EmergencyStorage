@@ -4,7 +4,7 @@
 # This script coordinates multiple specialized download scripts for different data sources
 # 
 # Usage: ./emergency_storage.sh [--sources] [--allow_download_from_mirror] [drive_address]
-# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts
+# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources
 
 set -e  # Exit on any error
 
@@ -25,7 +25,7 @@ show_usage() {
     echo "If only a directory path is provided, defaults to downloading all sources to that directory."
     echo ""
     echo -e "${COLOR_GREEN}Available Sources:${COLOR_RESET}"
-    echo "  --all            Download from all sources (default)"
+    echo "  --all            Download from all sources (default, excludes manual-sources)"
     echo "  --kiwix          Download Kiwix mirror (offline Wikipedia, etc.)"
     echo "  --openzim        Download OpenZIM files (educational content)"
     echo "  --openstreetmap  Download OpenStreetMap data (world map data)"
@@ -33,6 +33,7 @@ show_usage() {
     echo "  --ia-music       Download Internet Archive music collection"
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
+    echo "  --manual-sources Download from manually configured JSON sources (not part of --all)"
     echo ""
     echo -e "${COLOR_GREEN}Options:${COLOR_RESET}"
     echo "  --allow_download_from_mirror  Allow downloading from alternative Kiwix mirrors"
@@ -44,6 +45,7 @@ show_usage() {
     echo "  $0 /mnt/external_drive               # Download all to specified directory"
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
     echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
+    echo "  $0 --manual-sources /mnt/external_drive  # Download from manual sources JSON"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive"
     echo "  $0 --all --allow_download_from_mirror /mnt/external_drive"
     echo ""
@@ -116,6 +118,84 @@ download_ia_texts() {
     "$SCRIPT_DIR/scripts/ia-texts.sh" "$drive_path"
 }
 
+# Function to setup Python virtual environment
+setup_venv() {
+    local venv_path="$SCRIPT_DIR/.venv"
+    
+    # Check if Python3 is available
+    if ! command -v python3 &> /dev/null; then
+        log_error "python3 is not installed. Please install it first:"
+        log_info "  sudo apt-get install python3 python3-venv python3-pip"
+        return 1
+    fi
+    
+    # Check if venv module is available
+    if ! python3 -c "import venv" &> /dev/null; then
+        log_error "python3-venv is not installed. Please install it first:"
+        log_info "  sudo apt-get install python3-venv"
+        return 1
+    fi
+    
+    # Create venv if it doesn't exist
+    if [ ! -d "$venv_path" ]; then
+        log_info "Creating Python virtual environment..."
+        if python3 -m venv "$venv_path"; then
+            log_success "Virtual environment created at $venv_path"
+        else
+            log_error "Failed to create virtual environment"
+            return 1
+        fi
+    else
+        log_info "Virtual environment already exists at $venv_path"
+    fi
+    
+    # Install requirements if requirements.txt exists
+    if [ -f "$SCRIPT_DIR/requirements.txt" ]; then
+        log_info "Installing Python requirements..."
+        if "$venv_path/bin/pip" install -q -r "$SCRIPT_DIR/requirements.txt"; then
+            log_success "Requirements installed successfully"
+        else
+            log_warning "Failed to install requirements, but continuing (may use standard library only)"
+        fi
+    fi
+    
+    return 0
+}
+
+# Function to download from manual sources using JSON configuration
+download_manual_sources() {
+    local drive_path="$1"
+    
+    log_info "Downloading from manual sources (JSON configuration)..."
+    
+    # Setup virtual environment
+    if ! setup_venv; then
+        log_error "Failed to setup Python virtual environment"
+        return 1
+    fi
+    
+    # Change to the drive path
+    local manual_dir="$drive_path/manual_sources"
+    mkdir -p "$manual_dir"
+    cd "$manual_dir" || {
+        log_error "Failed to access directory: $manual_dir"
+        return 1
+    }
+    
+    log_info "Downloading to: $manual_dir"
+    
+    # Run the Python script with venv
+    if "$SCRIPT_DIR/.venv/bin/python3" "$SCRIPT_DIR/scripts/download_manual_sources.py"; then
+        log_success "Manual sources download completed"
+        cd - > /dev/null || true
+        return 0
+    else
+        log_error "Manual sources download failed"
+        cd - > /dev/null || true
+        return 1
+    fi
+}
+
 # Function to download from all sources
 download_all() {
     local drive_path="$1"
@@ -184,7 +264,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources)
                 if [ -n "$source" ]; then
                     log_error "Multiple source options specified"
                     show_usage
@@ -271,6 +351,9 @@ main() {
             ;;
         --ia-texts)
             download_ia_texts "$drive_path"
+            ;;
+        --manual-sources)
+            download_manual_sources "$drive_path"
             ;;
         *)
             log_error "Invalid source option $source"
