@@ -1,5 +1,7 @@
 # Manual Sources Quick Reference
 
+**Purpose:** For user-specified URLs NOT covered by existing scripts (Kiwix, OpenZIM, OpenStreetMap, Internet Archive).
+
 ## File Structure
 
 ```

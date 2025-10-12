@@ -1,47 +1,47 @@
 {
-  "description": "Manual download sources with recursive flag structure",
+  "description": "Manual download sources with recursive flag structure - for user-specified URLs not covered by existing scripts",
   "sources": {
-    "kiwix": {
-      "wikipedia": {
-        "en": {
-          "all": {
-            "url": "https://download.kiwix.org/zim/wikipedia_en_all_maxi.zim",
+    "custom_dataset": {
+      "research": {
+        "data": {
+          "v1": {
+            "url": "https://example.com/datasets/research-data-v1.tar.gz",
             "updateFile": true,
             "downloaded": false
           }
         },
-        "es": {
-          "all": {
-            "url": "https://download.kiwix.org/zim/wikipedia_es_all_maxi.zim",
+        "models": {
+          "v2": {
+            "url": "https://example.com/datasets/ml-models-v2.zip",
             "updateFile": false,
             "downloaded": false
           }
         }
       },
-      "wiktionary": {
-        "en": {
+      "documentation": {
+        "latest": {
           " ": {
-            "url": "https://download.kiwix.org/zim/wiktionary_en_all.zim",
+            "url": "https://example.com/docs/latest/manual.pdf",
             "updateFile": false,
             "downloaded": false
           }
         }
       }
     },
-    "archive": {
-      "texts": {
-        "gutenberg": {
+    "personal_backup": {
+      "configs": {
+        "dotfiles": {
           " ": {
-            "url": "https://archive.org/download/gutenberg/gutenberg_catalog.json",
+            "url": "https://example.com/backup/dotfiles.tar.gz",
             "updateFile": true,
             "downloaded": false
           }
         }
       },
-      "movies": {
+      "media": {
         " ": {
           " ": {
-            "url": "https://archive.org/download/feature_films/feature_films.json",
+            "url": "https://example.com/backup/media-archive.zip",
             "updateFile": false,
             "downloaded": false
           }

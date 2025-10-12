@@ -1,6 +1,6 @@
 # Manual Sources Download System
 
-The Manual Sources Download System allows you to configure and download files from specific URLs organized in a hierarchical structure. This is separate from the dynamic mirror system and is designed for manually curated download sources.
+The Manual Sources Download System allows you to configure and download files from specific URLs organized in a hierarchical structure. This is **separate from existing resource scripts** (Kiwix, OpenZIM, OpenStreetMap, Internet Archive) and is designed for **user-specified URLs** that are not covered by the automated download scripts.
 
 ## Overview
 
@@ -9,6 +9,23 @@ The system provides:
 - Configurable update behavior (download every time vs. download once)
 - Automatic tracking of downloaded files
 - Tree structure normalization for consistent depth
+- Support for custom URLs using wget, curl, rsync, transmission-cli, git, or other download tools
+
+## When to Use This System
+
+**Use manual sources for:**
+- Custom datasets or files from non-standard sources
+- Personal backups or configurations
+- Research data or private repositories
+- Any URL-based resource not covered by existing scripts
+
+**Do NOT use manual sources for:**
+- Kiwix content (use `scripts/kiwix.sh`)
+- OpenZIM files (use `scripts/openzim.sh`)
+- OpenStreetMap data (use `scripts/openstreetmap.sh`)
+- Internet Archive resources (use `scripts/ia-*.sh`)
+
+These resources are already handled by dedicated scripts with optimized download logic.
 
 ## Configuration File
 

@@ -2,6 +2,8 @@
 
 This file contains manually configured download sources organized in a hierarchical structure.
 
+**Important:** This is for user-specified URLs that are NOT covered by existing resource scripts (Kiwix, OpenZIM, OpenStreetMap, Internet Archive). For those resources, use their dedicated scripts in the `scripts/` directory.
+
 ## Structure
 
 ```json
