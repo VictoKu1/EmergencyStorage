@@ -12,10 +12,10 @@
     "alternative": ["https://example.com/docs/manual.pdf", "-C - https://example.com/docs/manual.pdf"]
   },
   "rsync": {
-    "url": "-avz https://example.com/backup/dotfiles.tar.gz /destination/",
+    "url": "-avz rsync://example.com/backup/dotfiles.tar.gz /destination/",
     "updateFile": false,
     "downloaded": false,
-    "alternative": ["-az https://example.com/backup/dotfiles.tar.gz /destination/", "https://example.com/backup/dotfiles.tar.gz /destination/"]
+    "alternative": ["-az rsync://example.com/backup/dotfiles.tar.gz /destination/", "user@example.com:/backup/dotfiles.tar.gz /destination/"]
   },
   "git": {
     "url": "clone https://github.com/example/repo.git",
