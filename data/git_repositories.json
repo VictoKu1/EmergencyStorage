@@ -1,0 +1,16 @@
+{
+  "repositories": [
+    {
+      "url": "https://github.com/torvalds/linux.git",
+      "name": "linux",
+      "clone_args": ["--depth", "1", "--single-branch"],
+      "enabled": false
+    },
+    {
+      "url": "https://github.com/example/this-repo-does-not-exist-12345.git",
+      "name": "nonexistent",
+      "clone_args": [],
+      "enabled": false
+    }
+  ]
+}
