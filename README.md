@@ -1,6 +1,6 @@
 # EmergencyStorage
 
-A modular project to download and mirror critical knowledge from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage
+A modular project to download and mirror critical knowledge from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage.
 
 
 ## ✨ Features
@@ -54,7 +54,7 @@ chmod +x emergency_storage.sh scripts/*.sh
 # Download from manual sources configuration (must be explicitly selected)
 ./emergency_storage.sh --manual-sources /mnt/external_drive
 
-# Download from manual sources configuration
+# Or use the manual sources script directly
 python3 scripts/download_manual_sources.py
 
 # Clone/update Git repositories directly
@@ -88,7 +88,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 | Source | Size | Description |
 |--------|------|-------------|
-| **Kiwix** | ~7TB (10TB for the complete repository)| Complete offline Wikipedia and educational content |
+| **Kiwix** | ~7TB (10TB for complete repository) | Complete offline Wikipedia and educational content |
 | **OpenZIM** | ~1TB | Compressed offline content (Wikipedia, educational materials) |
 | **OpenStreetMap** | ~70GB | Complete planet mapping data |
 | **IA Software** | 50GB-500GB | Preserved software, games, and applications |

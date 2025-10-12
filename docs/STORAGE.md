@@ -2,14 +2,16 @@
 
 ## Estimated Storage by Source
 
-- **Kiwix Mirror**: Usually +7TB for all ZIM files (typically several GB to TB depending on content)
-- **OpenZIM**: Usually +1TB for all files (typically several GB to TB, includes Wikipedia and educational content)
+- **Kiwix Mirror**: ~7TB for all ZIM files (typically ranges from several GB to TB depending on content)
+- **OpenZIM**: ~1TB for all files (includes Wikipedia and educational content)
 - **OpenStreetMap Planet**: ~70GB+ (compressed PBF format)
 - **Internet Archive Software**: 50GB - 500GB (depending on collections selected)
 - **Internet Archive Music**: 100GB - 1TB (depending on collections selected)
 - **Internet Archive Movies**: 500GB - 5TB (depending on collections selected)
 - **Internet Archive Texts**: 100GB - 2TB (depending on collections selected)
-- **Recommended**: At least 1TB+ free space for comfortable operation with all sources
+- **Git Repositories**: Variable (depends on repositories configured, typically 100MB - 50GB)
+- **Manual Sources**: Variable (depends on sources configured)
+- **Recommended**: At least 10TB-15TB+ free space for comfortable operation with all sources
 
 ## What Gets Downloaded
 
@@ -86,6 +88,25 @@ The script creates an `internet-archive-texts/` directory and downloads:
 - Subject-specific collections (mathematics, physics, chemistry, biology, etc.)
 
 **Content**: Books, research papers, academic texts, and historical documents.
+
+### Git Repositories
+
+The script clones configured Git repositories into a `git_repos/` directory:
+- Source code repositories
+- Configuration files
+- Documentation repositories
+- Any Git-hosted content specified in configuration
+
+**Content**: Git repositories specified in `data/git_repositories.json`.
+
+### Manual Sources
+
+The script downloads user-configured sources into a `downloads/manual/` directory:
+- Custom datasets
+- User-specified files
+- Non-standard sources not covered by other scripts
+
+**Content**: Any content specified in `data/manual_sources.json`.
 
 ## Planning Your Storage
 

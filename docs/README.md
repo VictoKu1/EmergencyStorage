@@ -31,6 +31,16 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Configuration examples
   - Scheduling quick reference
 
+- **[Manual Sources Quick Reference](MANUAL_SOURCES_QUICK_REF.md)** - Quick manual sources configuration
+  - Quick commands
+  - JSON structure examples
+  - Testing and troubleshooting
+
+- **[Git Repositories Quick Reference](GIT_REPOSITORIES_QUICK_REF.md)** - Quick Git repository management
+  - Quick commands
+  - Configuration templates
+  - Common clone arguments
+
 ### Understanding the System
 
 - **[Architecture](ARCHITECTURE.md)** - System design and structure
@@ -43,6 +53,18 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Size estimates for each data source
   - What content gets downloaded
   - Storage planning recommendations
+
+- **[Manual Sources](MANUAL_SOURCES.md)** - Configure manual download sources
+  - When to use manual sources
+  - Configuration file structure
+  - Download behavior and fallback
+  - Examples for different tools
+
+- **[Git Repositories](GIT_REPOSITORIES.md)** - Clone and manage Git repositories in parallel
+  - Overview and features
+  - Configuration file structure
+  - Operations (clone, update, both)
+  - Error handling and logging
 
 - **[Mirror System](MIRROR_SYSTEM.md)** - Dynamic mirror management
   - How automatic mirror updates work
@@ -97,6 +119,12 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 
 **...work with mirrors**
 → Read [Mirror System](MIRROR_SYSTEM.md)
+
+**...configure manual downloads**
+→ See [Manual Sources](MANUAL_SOURCES.md) or [Quick Reference](MANUAL_SOURCES_QUICK_REF.md)
+
+**...manage Git repositories**
+→ Read [Git Repositories](GIT_REPOSITORIES.md) or [Quick Reference](GIT_REPOSITORIES_QUICK_REF.md)
 
 ## 📝 Additional Resources
 
