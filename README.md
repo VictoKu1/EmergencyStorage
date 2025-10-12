@@ -21,7 +21,7 @@ A modular project to download and mirror critical knowledge from multiple source
 ```bash
 # Install dependencies
 sudo apt-get update
-sudo apt-get install rsync curl wget python3
+sudo apt-get install rsync curl wget python3 python3-venv python3-pip
 
 # Clone the repository
 git clone https://github.com/VictoKu1/EmergencyStorage.git
@@ -44,6 +44,9 @@ chmod +x emergency_storage.sh scripts/*.sh
 ./emergency_storage.sh --kiwix /mnt/external_drive
 ./emergency_storage.sh --openzim /mnt/external_drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
+
+# Download from manual sources configuration (must be explicitly selected)
+./emergency_storage.sh --manual-sources /mnt/external_drive
 
 # Download from manual sources configuration
 python3 scripts/download_manual_sources.py
@@ -83,7 +86,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 ## 🛠️ Available Options
 
 ```bash
---all              # Download from all sources (default)
+--all              # Download from all sources (default, excludes manual-sources)
 --kiwix            # Kiwix mirror only
 --openzim          # OpenZIM files only
 --openstreetmap    # OpenStreetMap data only
@@ -91,6 +94,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 --ia-music         # Internet Archive music only
 --ia-movies        # Internet Archive movies only
 --ia-texts         # Internet Archive texts only
+--manual-sources   # Manual JSON sources only (must be explicitly selected)
 ```
 
 ## 🤝 Contributing

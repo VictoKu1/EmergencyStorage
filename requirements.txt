@@ -1,0 +1,4 @@
+# Python requirements for EmergencyStorage
+# Currently uses only standard library modules, but this file is provided for future extensibility
+
+requests
