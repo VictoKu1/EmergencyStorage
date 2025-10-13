@@ -17,55 +17,14 @@ A modular project to download and mirror critical knowledge from multiple source
 
 ## 🚀 Quick Start
 
-### Recommended hardware
+### Recommended Hardware
 
-This project is designed to run reliably on a Raspberry Pi with large external storage. The following hardware is recommended:
+**Raspberry Pi**: Raspberry Pi 5 (recommended) or Raspberry Pi 4 Model B (4GB+)  
+**Storage**: 15TB+ external HDD with USB 3.0 dock or SATA HAT  
+**Power**: Official power supply for Pi; independent power for drives  
+**Cooling**: Heatsink and fan recommended for sustained I/O operations
 
-- Raspberry Pi
-  - Raspberry Pi 5 (recommended for best I/O performance) or Raspberry Pi 4 Model B (4GB+)
-  - Official documentation:
-    - Raspberry Pi 5 product page: [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
-    - Raspberry Pi 4 Model B product page: [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
-    - General documentation: [Raspberry Pi Documentation](https://www.raspberrypi.com/documentation/)
-  - Power:
-    - Pi 5: [27W USB‑C Power Supply](https://www.raspberrypi.com/products/27w-power-supply/)
-    - Pi 4: [5.1V 3A USB‑C Power Supply](https://www.raspberrypi.com/products/type-c-power-supply/)
-  - Boot/storage notes:
-    - USB mass‑storage boot (optional): [USB mass storage boot docs](https://www.raspberrypi.com/documentation/computers/configuration.html#usb-mass-storage-boot)
-
-- External storage (primary data drive)
-  - 15TB or larger 3.5" SATA HDD from a reputable vendor (CMR drives preferred for sustained writes)
-  - Use GPT partitioning and a Linux filesystem (e.g., ext4). Ensure adequate ventilation for 3.5" drives.
-
-- Option A: USB 3.0 SATA docking station (for 3.5" HDDs)
-  - Requirements:
-    - Native 12V/5V power supply for the dock (do not bus‑power 3.5" drives from the Pi)
-    - USB 3.x and UASP support for better throughput/latency
-  - References:
-    - Linux UAS overview: [USB Attached SCSI (UAS)](https://www.kernel.org/doc/html/latest/scsi/uas.html)
-    - Raspberry Pi USB storage/boot guidance: [Mass storage boot](https://www.raspberrypi.com/documentation/computers/configuration.html#usb-mass-storage-boot)
-  - Example vendor documentation (non‑endorsement):
-    - StarTech single‑bay USB 3.0 SATA dock: [SDOCKU33** series](https://www.startech.com/en-us/hdd/sdocku33ef)
-
-- Option B: Raspberry Pi SATA expansion boards/HATs
-  - For multi‑drive or neater integration, a Pi‑compatible SATA expansion board can be used. Ensure the board provides independent power for 3.5" drives
-  - Popular boards and documentation (non‑endorsement):
-    - Geekworm 3.5" SATA board (for Pi 4): [X828 Wiki](https://wiki.geekworm.com/X828)
-    - Geekworm dual 2.5" SATA HAT (for Pi 4): [X829 Wiki](https://wiki.geekworm.com/X829)
-    - Radxa SATA HAT (for Pi 4): [SATA HAT Wiki](https://wiki.radxa.com/SATA_HAT)
-  - Notes:
-    - Many SATA HATs for Pi 4 use USB 3.x bridges internally; performance and stability depend on the bridge chipset and firmware.
-    - For Raspberry Pi 5, consider PCIe‑based storage via the official M.2 HAT+ (for NVMe SSDs) if your workload suits SSDs:
-      - [M.2 HAT+](https://www.raspberrypi.com/documentation/computers/raspberry-pi-5.html#m-2-hat-plus)
-
-- Cables and cooling
-  - High‑quality USB 3.x cable (short, shielded) if using a USB dock/enclosure
-  - Adequate cooling for the Raspberry Pi (heatsink + fan or active case), especially under sustained I/O
-
-Notes and compatibility tips:
-- Prefer UASP‑capable docks/bridges; fall back to BOT if stability issues occur
-- Some USB‑SATA bridges may require “quirks” to disable UAS for stability; consult your bridge vendor documentation and Raspberry Pi USB storage guidance
-- Use a reliable power source for both the Pi and the drives; brownouts can cause I/O errors and filesystem corruption
+See **[Hardware Guide](docs/HARDWARE.md)** for detailed specifications, compatibility notes, and vendor references.
   
 ### Installation
 
@@ -152,6 +111,7 @@ See [Automatic Updates Documentation](docs/AUTO_UPDATE.md) for more details.
 Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 - **[Installation Guide](docs/INSTALLATION.md)** - Detailed setup instructions and prerequisites
+- **[Hardware Guide](docs/HARDWARE.md)** - Recommended hardware specifications and compatibility
 - **[Usage Guide](docs/USAGE.md)** - Complete usage examples and tips
 - **[Automatic Updates](docs/AUTO_UPDATE.md)** - Schedule and automate resource updates
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and project structure
