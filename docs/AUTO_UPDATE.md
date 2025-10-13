@@ -34,6 +34,32 @@ The automatic update system consists of:
 
 ## Quick Start
 
+### For Local Installation (Recommended for Users)
+
+If you've downloaded this project to your Linux PC:
+
+1. **Run the setup script** (one-time setup):
+   ```bash
+   ./scripts/setup_auto_update.sh
+   ```
+   
+   This will:
+   - Create a systemd timer that runs automatically
+   - Persist through system restarts
+   - Ask you to choose your preferred update schedule
+
+2. **That's it!** Updates will now run automatically on your schedule.
+
+### For GitHub-Hosted Repository
+
+If you're hosting this repository on GitHub and want updates to run in the cloud:
+
+- The GitHub Actions workflow (`.github/workflows/auto-update-resources.yml`) is already configured
+- It runs daily at 02:00 UTC by default
+- See [GitHub Actions Integration](#github-actions-integration) for customization
+
+### Manual Setup
+
 ### 1. Configure Resources
 
 Edit `data/auto_update_config.json` to enable/disable resources and set preferences:
@@ -64,9 +90,9 @@ python3 scripts/auto_update.py --resource1 --resource2
 python3 scripts/auto_update.py --dry-run
 ```
 
-### 3. Enable Automatic Updates
+### 3. Enable Automatic Updates (Manual Methods)
 
-The system automatically runs via GitHub Actions based on the schedule in the workflow file.
+See [Scheduling Updates](#scheduling-updates) for manual cron or systemd setup options.
 
 ## Configuration
 
@@ -200,9 +226,47 @@ python3 scripts/auto_update.py --resource3 --dry-run
 
 ## Scheduling Updates
 
-### Option 1: GitHub Actions (Recommended)
+### Option 1: Automated Setup Script (Recommended for Local Installations)
 
-The system includes a GitHub Actions workflow that runs automatically.
+For users who have downloaded this project to their Linux PC, use the automated setup script:
+
+```bash
+./scripts/setup_auto_update.sh
+```
+
+**Features:**
+- Interactive setup with schedule selection
+- Creates systemd timer that persists through reboots
+- Automatic startup on system boot
+- Easy to manage with systemctl commands
+
+**What it does:**
+1. Creates a systemd service that runs the update script
+2. Creates a systemd timer with your chosen schedule
+3. Enables the timer to start automatically on boot
+4. Starts the timer immediately
+
+**Schedule Options:**
+- Daily at 02:00 (default)
+- Weekly on Sunday at 02:00
+- Monthly on the 1st at 02:00
+- Custom time (daily)
+
+**After Setup:**
+```bash
+# Check status
+systemctl status emergency-storage-update.timer
+
+# View logs
+tail -f logs/auto_update.log
+
+# Next scheduled run
+systemctl list-timers emergency-storage-update.timer
+```
+
+### Option 2: GitHub Actions (For GitHub-Hosted Repositories)
+
+If your repository is hosted on GitHub, the included workflow runs automatically in the cloud.
 
 **Default Schedule:** Daily at 02:00 UTC
 
@@ -240,7 +304,7 @@ You can also manually trigger updates from GitHub:
 4. Click "Run workflow"
 5. Optionally specify resources to update (e.g., `resource1,resource3`)
 
-### Option 2: Local Cron Job
+### Option 3: Manual Local Cron Job
 
 For running on a local machine or server:
 
@@ -262,7 +326,7 @@ For running on a local machine or server:
 
 **Note:** Cron jobs persist through system restarts automatically. Once added to your crontab, they will continue to run according to schedule even after rebooting.
 
-### Option 3: systemd Timer (Linux)
+### Option 4: Manual systemd Timer (Linux)
 
 Create a systemd timer for more control:
 
@@ -300,27 +364,37 @@ Create a systemd timer for more control:
 
 **Note:** The `Persistent=true` setting ensures that if the system was powered off when a scheduled update should have run, the timer will trigger the update immediately upon system restart. The `enable` command ensures the timer starts automatically on every boot.
 
+**Note:** For easier setup, use the automated setup script (`./scripts/setup_auto_update.sh`) instead of manually creating these files.
+
 ## Persistence After System Restart
 
-All three scheduling methods are designed to survive system restarts:
+All scheduling methods are designed to survive system restarts:
+
+### Automated Setup Script (Recommended for Local Installations)
+- **Persistence:** Automatic - systemd timer enabled at boot
+- **After Restart:** Timer starts automatically on boot
+- **Missed Runs:** With `Persistent=true`, runs immediately if system was off during scheduled time
+- **Setup:** Run `./scripts/setup_auto_update.sh` once
+- **Verification:** Run `systemctl status emergency-storage-update.timer` to check status
+- **Best for:** Local Linux installations, users who want easy setup with persistence
 
 ### GitHub Actions
 - **Persistence:** Fully automatic - runs on GitHub's infrastructure
 - **After Restart:** No action needed - continues running on schedule
 - **Best for:** Cloud-hosted repositories, users who don't want to manage local services
 
-### Cron Jobs
+### Manual Cron Jobs
 - **Persistence:** Automatic - crontab entries persist through reboots
 - **After Restart:** No action needed - cron daemon starts automatically on boot
 - **Verification:** Run `crontab -l` to confirm your jobs are still scheduled
 - **Best for:** Simple scheduling on always-on servers or desktops
 
-### systemd Timers
+### Manual systemd Timers
 - **Persistence:** Automatic when enabled with `systemctl enable`
 - **After Restart:** Timer starts automatically on boot
 - **Missed Runs:** With `Persistent=true`, runs immediately if system was off during scheduled time
 - **Verification:** Run `systemctl status emergency-storage-update.timer` to check status
-- **Best for:** Linux systems requiring advanced control and reliability
+- **Best for:** Advanced users who want manual control over systemd configuration
 
 ### Ensuring Automatic Startup
 

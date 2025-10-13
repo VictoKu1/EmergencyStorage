@@ -81,7 +81,15 @@ cd EmergencyStorage
 
 # Make scripts executable
 chmod +x emergency_storage.sh scripts/*.sh
+
+# Optional: Set up automatic updates (recommended)
+./scripts/setup_auto_update.sh
 ```
+
+The optional automatic update setup will:
+- Configure daily automatic resource updates (persists through system restarts)
+- Let you choose your preferred update schedule
+- Use systemd timers for reliable scheduling on Linux
 
 ### Basic Usage
 
@@ -109,13 +117,35 @@ python3 scripts/download_manual_sources.py
 # Clone/update Git repositories directly
 python3 scripts/download_git_repos.py
 
-# Automatic updates with resource flags
-python3 scripts/auto_update.py
-python3 scripts/auto_update.py --resource1 --resource2
-
 # Show help
 ./emergency_storage.sh --help
 ```
+
+### Automatic Updates
+
+Set up automatic resource updates that persist through system restarts:
+
+```bash
+# Run the automated setup (one-time)
+./scripts/setup_auto_update.sh
+
+# Or run updates manually
+python3 scripts/auto_update.py
+
+# Update specific resources
+python3 scripts/auto_update.py --resource1 --resource2
+
+# Dry run to test configuration
+python3 scripts/auto_update.py --dry-run
+```
+
+The setup script configures systemd timers that:
+- ✅ Run automatically on your chosen schedule
+- ✅ Persist through system restarts
+- ✅ Start automatically on boot
+- ✅ Catch up on missed runs if system was off
+
+See [Automatic Updates Documentation](docs/AUTO_UPDATE.md) for more details.
 
 ## 📖 Documentation
 
