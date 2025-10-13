@@ -4,7 +4,7 @@ This guide explains how the automatic update system works for **local Linux inst
 
 ## Problem Solved
 
-Previously, the documentation emphasized GitHub Actions for automatic updates, which only works for repositories hosted on GitHub. Users who download this project to their PC need a local solution that:
+Previously, the documentation lacked an easy setup method for automatic updates on local installations. Users who download this project to their PC need a local solution that:
 - Runs automatically on a schedule
 - Persists through system restarts
 - Starts automatically when the system boots
@@ -120,9 +120,6 @@ crontab -e
 # Add line:
 0 2 * * * cd /path/to/EmergencyStorage && python3 scripts/auto_update.py
 ```
-
-### ✅ GitHub-hosted repository
-The included GitHub Actions workflow (`.github/workflows/auto-update-resources.yml`) runs automatically
 
 ## Configuration
 

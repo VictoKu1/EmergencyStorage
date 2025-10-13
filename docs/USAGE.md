@@ -218,10 +218,13 @@ Example configuration:
 
 ### Scheduling Automatic Updates
 
-**Using GitHub Actions (Automatic):**
-- Workflow runs based on schedule in `.github/workflows/auto-update-resources.yml`
-- Default: Daily at 02:00 UTC
-- Can be manually triggered from GitHub Actions tab
+**Using Automated Setup (Recommended):**
+```bash
+# One-time setup
+./scripts/setup_auto_update.sh
+
+# Follow the interactive prompts to choose your schedule
+```
 
 **Using Local Cron:**
 ```bash

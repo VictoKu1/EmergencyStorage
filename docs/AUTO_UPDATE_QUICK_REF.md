@@ -102,25 +102,6 @@ python3 scripts/auto_update.py --help
 
 **Persistence:** Timer persists through restarts and starts on boot.
 
-### GitHub Actions Schedule (For GitHub-Hosted Repos)
-
-**File:** `.github/workflows/auto-update-resources.yml`
-
-**Change update time:**
-```yaml
-on:
-  schedule:
-    - cron: '0 2 * * *'  # minute hour day month day-of-week
-```
-
-**Common schedules:**
-- Daily at 02:00: `0 2 * * *`
-- Weekly on Sunday: `0 2 * * 0`
-- Monthly on 1st: `0 2 1 * *`
-- Every 6 hours: `0 */6 * * *`
-
-**Persistence:** Runs on GitHub's infrastructure - always persists through restarts.
-
 ### Manual Local Cron Job
 
 ```bash

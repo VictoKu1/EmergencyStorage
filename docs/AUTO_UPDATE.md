@@ -9,7 +9,6 @@ The Automatic Resource Update System allows you to schedule and automate the upd
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Scheduling Updates](#scheduling-updates)
-- [GitHub Actions Integration](#github-actions-integration)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 
@@ -19,13 +18,13 @@ The automatic update system consists of:
 
 1. **Configuration File** (`data/auto_update_config.json`) - Defines which resources to update and how
 2. **Update Script** (`scripts/auto_update.py`) - Executes the updates based on configuration
-3. **GitHub Actions Workflow** (`.github/workflows/auto-update-resources.yml`) - Automates scheduled updates
+3. **Setup Script** (`scripts/setup_auto_update.sh`) - Automated setup for local installations
 4. **Resource Flags** - Command-line flags (`--resource1`, `--resource2`, etc.) for selective updates
 
 ### Features
 
 - ✅ **Selective Updates**: Choose which resources to update using command-line flags
-- ✅ **Automatic Scheduling**: Use GitHub Actions or cron jobs for automated updates
+- ✅ **Automatic Scheduling**: Use systemd timers or cron jobs for automated updates
 - ✅ **Configurable Frequencies**: Set different update frequencies for each resource (daily, weekly, monthly)
 - ✅ **Retry Logic**: Automatically retry failed updates
 - ✅ **Dry Run Mode**: Test configuration without executing actual updates
@@ -49,14 +48,6 @@ If you've downloaded this project to your Linux PC:
    - Ask you to choose your preferred update schedule
 
 2. **That's it!** Updates will now run automatically on your schedule.
-
-### For GitHub-Hosted Repository
-
-If you're hosting this repository on GitHub and want updates to run in the cloud:
-
-- The GitHub Actions workflow (`.github/workflows/auto-update-resources.yml`) is already configured
-- It runs daily at 02:00 UTC by default
-- See [GitHub Actions Integration](#github-actions-integration) for customization
 
 ### Manual Setup
 
@@ -264,47 +255,7 @@ tail -f logs/auto_update.log
 systemctl list-timers emergency-storage-update.timer
 ```
 
-### Option 2: GitHub Actions (For GitHub-Hosted Repositories)
-
-If your repository is hosted on GitHub, the included workflow runs automatically in the cloud.
-
-**Default Schedule:** Daily at 02:00 UTC
-
-**To Change the Schedule:**
-
-1. Edit `.github/workflows/auto-update-resources.yml`
-2. Modify the `cron` expression:
-
-```yaml
-on:
-  schedule:
-    # Change this line
-    - cron: '0 2 * * *'  # minute hour day month day-of-week
-```
-
-**Examples:**
-
-```yaml
-# Run every 6 hours
-- cron: '0 */6 * * *'
-
-# Run weekly on Monday at 03:00
-- cron: '0 3 * * 1'
-
-# Run twice daily (06:00 and 18:00)
-- cron: '0 6,18 * * *'
-```
-
-**Manual Triggering:**
-
-You can also manually trigger updates from GitHub:
-1. Go to your repository on GitHub
-2. Click "Actions" tab
-3. Select "Automatic Resource Updates"
-4. Click "Run workflow"
-5. Optionally specify resources to update (e.g., `resource1,resource3`)
-
-### Option 3: Manual Local Cron Job
+### Option 2: Manual Local Cron Job
 
 For running on a local machine or server:
 
@@ -326,7 +277,7 @@ For running on a local machine or server:
 
 **Note:** Cron jobs persist through system restarts automatically. Once added to your crontab, they will continue to run according to schedule even after rebooting.
 
-### Option 4: Manual systemd Timer (Linux)
+### Option 3: Manual systemd Timer (Linux)
 
 Create a systemd timer for more control:
 
@@ -378,11 +329,6 @@ All scheduling methods are designed to survive system restarts:
 - **Verification:** Run `systemctl status emergency-storage-update.timer` to check status
 - **Best for:** Local Linux installations, users who want easy setup with persistence
 
-### GitHub Actions
-- **Persistence:** Fully automatic - runs on GitHub's infrastructure
-- **After Restart:** No action needed - continues running on schedule
-- **Best for:** Cloud-hosted repositories, users who don't want to manage local services
-
 ### Manual Cron Jobs
 - **Persistence:** Automatic - crontab entries persist through reboots
 - **After Restart:** No action needed - cron daemon starts automatically on boot
@@ -419,52 +365,6 @@ systemctl status emergency-storage-update.timer
 
 # View next scheduled run
 systemctl list-timers emergency-storage-update.timer
-```
-
-**For GitHub Actions:**
-- No local verification needed - managed by GitHub
-- Check workflow history in your repository's Actions tab
-
-## GitHub Actions Integration
-
-### Workflow File
-
-The workflow is located at `.github/workflows/auto-update-resources.yml`
-
-### Customization
-
-#### Change Update Time
-
-Edit the cron schedule:
-
-```yaml
-on:
-  schedule:
-    - cron: '0 3 * * *'  # Run at 03:00 UTC instead
-```
-
-#### Add Notifications
-
-Add a notification step:
-
-```yaml
-- name: Send notification
-  if: failure()
-  run: |
-    # Send email or webhook notification
-    echo "Update failed" | mail -s "EmergencyStorage Update Failed" your@email.com
-```
-
-#### Change Destination
-
-Modify the configuration file or add environment variables:
-
-```yaml
-- name: Run automatic updates
-  env:
-    DESTINATION_PATH: /mnt/external_drive
-  run: |
-    python3 scripts/auto_update.py
 ```
 
 ## Examples
