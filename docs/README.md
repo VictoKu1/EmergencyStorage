@@ -12,6 +12,13 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Storage setup
   - Troubleshooting installation issues
 
+- **[Hardware Guide](HARDWARE.md)** - Recommended hardware specifications
+  - Raspberry Pi models and requirements
+  - External storage recommendations
+  - Connection options (USB docks and SATA HATs)
+  - Power requirements and cooling
+  - Compatibility tips and best practices
+
 - **[Usage Guide](USAGE.md)** - How to use EmergencyStorage
   - Main script usage with examples
   - Individual script usage
@@ -107,6 +114,9 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 
 **...get started quickly**
 → Start with [Installation Guide](INSTALLATION.md), then [Usage Guide](USAGE.md)
+
+**...know what hardware to use**
+→ Check [Hardware Guide](HARDWARE.md)
 
 **...set up automatic updates**
 → See [Setup Guide](AUTO_UPDATE_SETUP_GUIDE.md), [Automatic Updates](AUTO_UPDATE.md), or [Quick Reference](AUTO_UPDATE_QUICK_REF.md)
