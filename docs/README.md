@@ -26,6 +26,12 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Changing update times and frequencies
   - Examples and troubleshooting
 
+- **[Automatic Updates Setup Guide](AUTO_UPDATE_SETUP_GUIDE.md)** - Quick guide for local setup
+  - One-command setup for Linux
+  - How persistence works
+  - Verification and testing
+  - Troubleshooting common issues
+
 - **[Automatic Updates Quick Reference](AUTO_UPDATE_QUICK_REF.md)** - Quick commands and settings
   - Common commands
   - Configuration examples
@@ -103,7 +109,7 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 → Start with [Installation Guide](INSTALLATION.md), then [Usage Guide](USAGE.md)
 
 **...set up automatic updates**
-→ See [Automatic Updates](AUTO_UPDATE.md) or [Quick Reference](AUTO_UPDATE_QUICK_REF.md)
+→ See [Setup Guide](AUTO_UPDATE_SETUP_GUIDE.md), [Automatic Updates](AUTO_UPDATE.md), or [Quick Reference](AUTO_UPDATE_QUICK_REF.md)
 
 **...understand how it works**
 → Read [Architecture](ARCHITECTURE.md)
