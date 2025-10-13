@@ -1,6 +1,6 @@
 # EmergencyStorage
 
-A modular project to download and mirror critical knowledge from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage
+A modular project to download and mirror critical knowledge (Kiwix, OpenZIM, OpenStreetMap, Wikipedia, Git Reposiotries etc.....) from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage
 
 
 ## ✨ Features
@@ -24,7 +24,7 @@ A modular project to download and mirror critical knowledge from multiple source
 **Power**: Official power supply for Pi; independent power for drives  
 **Cooling**: Heatsink and fan recommended for sustained I/O operations
 
-See **[Hardware Guide](docs/HARDWARE.md)** for detailed specifications, compatibility notes, and vendor references.
+See **[Hardware Guide](docs/HARDWARE.md)** for detailed specifications, compatibility notes, and vendor references
   
 ### Installation
 
@@ -162,11 +162,11 @@ We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-**Need Help?** Check the [documentation](docs/) or [open an issue](https://github.com/VictoKu1/EmergencyStorage/issues).
+**Need Help?** Check the [documentation](docs/) or [open an issue](https://github.com/VictoKu1/EmergencyStorage/issues)
 
 
 
