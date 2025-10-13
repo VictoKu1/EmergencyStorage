@@ -233,6 +233,63 @@ For each configuration, you can set up a separate cron job:
 
 **Note:** Cron jobs persist through system restarts automatically. Once added to crontab, they continue running on schedule after reboots.
 
+## Automated Setup for Local Installations
+
+The easiest way to set up automatic updates on your local Linux system:
+
+```bash
+# Run the setup script
+./scripts/setup_auto_update.sh
+```
+
+This creates a systemd timer that:
+- Runs automatically on your chosen schedule
+- Persists through system restarts
+- Starts on boot
+- Catches up on missed runs if system was off
+
+### Verifying Persistence After Setup
+
+After running the setup script, verify the timer will persist:
+
+```bash
+# Check if timer is enabled (will start on boot)
+systemctl is-enabled emergency-storage-update.timer
+# Should output: enabled
+
+# View timer status
+systemctl status emergency-storage-update.timer
+# Should show: Active: active (waiting)
+
+# See next scheduled run
+systemctl list-timers emergency-storage-update.timer
+
+# View timer configuration (includes Persistent=true)
+systemctl cat emergency-storage-update.timer
+```
+
+### Testing Persistence
+
+To test that updates will survive a system restart:
+
+1. **Before restart:** Check the next scheduled run time
+   ```bash
+   systemctl list-timers emergency-storage-update.timer
+   ```
+
+2. **After restart:** Verify the timer is still running
+   ```bash
+   systemctl status emergency-storage-update.timer
+   systemctl list-timers emergency-storage-update.timer
+   ```
+
+3. **Check logs** to see if missed updates ran:
+   ```bash
+   tail -f logs/auto_update.log
+   ```
+
+The `Persistent=true` setting in the timer ensures that if the system was off during a scheduled run, the update will execute immediately after boot.
+
 ## See Also
 
 - [AUTO_UPDATE.md](../docs/AUTO_UPDATE.md) - Full documentation
