@@ -45,9 +45,8 @@ EmergencyStorage/
 │   └── auto_update_config.json   # Automatic update configuration
 ├── .github/
 │   └── workflows/
-│       ├── update-mirrors.yml    # Automated mirror update workflow
-│       └── auto-update-resources.yml # Automated resource updates
-├── docs/                         # Documentation
+│       └── update-mirrors.yml      # Automated mirror update workflow
+├── docs/                           # Documentation
 ├── tests/                        # Test suites
 ├── README.md                     # Main documentation
 └── LICENSE                       # MIT License

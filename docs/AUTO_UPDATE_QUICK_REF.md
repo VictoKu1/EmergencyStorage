@@ -2,6 +2,19 @@
 
 Quick reference for the EmergencyStorage automatic update system.
 
+## Quick Setup (Local Installation)
+
+```bash
+# One-time setup for automatic updates
+./scripts/setup_auto_update.sh
+
+# Check status
+systemctl status emergency-storage-update.timer
+
+# View logs
+tail -f logs/auto_update.log
+```
+
 ## Quick Commands
 
 ```bash
@@ -72,26 +85,24 @@ python3 scripts/auto_update.py --help
 
 ## Scheduling
 
-### GitHub Actions Schedule
+### Automated Setup (Recommended for Local)
 
-**File:** `.github/workflows/auto-update-resources.yml`
+```bash
+# Run setup script (one-time)
+./scripts/setup_auto_update.sh
 
-**Change update time:**
-```yaml
-on:
-  schedule:
-    - cron: '0 2 * * *'  # minute hour day month day-of-week
+# Choose your schedule:
+# - Daily at 02:00 (default)
+# - Weekly on Sunday at 02:00
+# - Monthly on 1st at 02:00
+# - Custom time (daily)
+
+# After setup, timer starts automatically on boot
 ```
 
-**Common schedules:**
-- Daily at 02:00: `0 2 * * *`
-- Weekly on Sunday: `0 2 * * 0`
-- Monthly on 1st: `0 2 1 * *`
-- Every 6 hours: `0 */6 * * *`
+**Persistence:** Timer persists through restarts and starts on boot.
 
-**Persistence:** Runs on GitHub's infrastructure - always persists through restarts.
-
-### Local Cron Job
+### Manual Local Cron Job
 
 ```bash
 # Edit crontab
@@ -103,7 +114,7 @@ crontab -e
 
 **Persistence:** Cron jobs automatically persist through system restarts.
 
-### systemd Timer
+### Manual systemd Timer
 
 ```bash
 # Enable timer (persists through restarts)
@@ -115,6 +126,8 @@ systemctl status emergency-storage-update.timer
 ```
 
 **Persistence:** With `systemctl enable`, timer starts automatically on every boot. `Persistent=true` in timer file ensures missed runs execute after restart.
+
+**Note:** For easier setup, use `./scripts/setup_auto_update.sh` instead.
 
 ## Common Settings
 

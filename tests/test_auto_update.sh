@@ -106,30 +106,16 @@ test_multiple_flags() {
     fi
 }
 
-# Test 9: Check if GitHub Actions workflow exists
-test_workflow_exists() {
-    if [ -f "$REPO_ROOT/.github/workflows/auto-update-resources.yml" ]; then
-        print_result "GitHub Actions workflow exists" "PASS"
+# Test 9: Check if setup script exists
+test_setup_script_exists() {
+    if [ -f "$REPO_ROOT/scripts/setup_auto_update.sh" ]; then
+        print_result "Setup script exists" "PASS"
     else
-        print_result "GitHub Actions workflow exists" "FAIL"
+        print_result "Setup script exists" "FAIL"
     fi
 }
 
-# Test 10: Validate workflow YAML syntax
-test_workflow_valid_yaml() {
-    if python3 -c "import yaml; yaml.safe_load(open('$REPO_ROOT/.github/workflows/auto-update-resources.yml'))" 2>/dev/null; then
-        print_result "Workflow is valid YAML" "PASS"
-    else
-        # Try without yaml module (may not be installed)
-        if grep -q "name: Automatic Resource Updates" "$REPO_ROOT/.github/workflows/auto-update-resources.yml"; then
-            print_result "Workflow is valid YAML" "PASS"
-        else
-            print_result "Workflow is valid YAML" "FAIL"
-        fi
-    fi
-}
-
-# Test 11: Check if documentation exists
+# Test 10: Check if documentation exists
 test_documentation_exists() {
     if [ -f "$REPO_ROOT/docs/AUTO_UPDATE.md" ]; then
         print_result "Auto-update documentation exists" "PASS"
@@ -138,7 +124,7 @@ test_documentation_exists() {
     fi
 }
 
-# Test 12: Check if quick reference exists
+# Test 11: Check if quick reference exists
 test_quick_ref_exists() {
     if [ -f "$REPO_ROOT/docs/AUTO_UPDATE_QUICK_REF.md" ]; then
         print_result "Quick reference exists" "PASS"
@@ -147,7 +133,7 @@ test_quick_ref_exists() {
     fi
 }
 
-# Test 13: Verify configuration structure
+# Test 12: Verify configuration structure
 test_config_structure() {
     if python3 -c "
 import json
@@ -164,7 +150,7 @@ assert 'enabled' in config['resources']['resource1']
     fi
 }
 
-# Test 14: Check if logs directory can be created
+# Test 13: Check if logs directory can be created
 test_logs_directory() {
     mkdir -p "$REPO_ROOT/logs"
     if [ -d "$REPO_ROOT/logs" ]; then
@@ -190,8 +176,7 @@ test_help_flag
 test_dry_run
 test_resource1_flag
 test_multiple_flags
-test_workflow_exists
-test_workflow_valid_yaml
+test_setup_script_exists
 test_documentation_exists
 test_quick_ref_exists
 test_config_structure

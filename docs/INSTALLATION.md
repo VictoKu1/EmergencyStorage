@@ -89,6 +89,41 @@ deactivate
 
 **Note**: The virtual environment (`.venv/`) is automatically managed by the main script when using `--manual-sources`. You don't need to activate it manually.
 
+### 6. Setup Automatic Updates (Optional but Recommended)
+
+Configure automatic resource updates that persist through system restarts:
+
+```bash
+# Run the interactive setup script
+./scripts/setup_auto_update.sh
+```
+
+This will:
+- Create a systemd timer for automatic updates
+- Let you choose your update schedule (daily, weekly, monthly, or custom)
+- Configure the timer to start automatically on boot
+- Enable persistence (catch up on missed runs if system was off)
+
+**Features:**
+- ✅ Runs automatically on your chosen schedule
+- ✅ Persists through system restarts
+- ✅ Starts automatically on boot
+- ✅ Catches up on missed runs
+
+**After Setup:**
+```bash
+# Check timer status
+systemctl status emergency-storage-update.timer
+
+# View next scheduled run
+systemctl list-timers emergency-storage-update.timer
+
+# View logs
+tail -f logs/auto_update.log
+```
+
+See [Automatic Updates Documentation](AUTO_UPDATE.md) for more details.
+
 ## Optional Tools
 
 ### Development Dependencies
