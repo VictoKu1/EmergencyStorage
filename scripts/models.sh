@@ -158,22 +158,30 @@ download_model() {
         log_info "Model $model_name is already downloaded, checking for updates..."
         
         # Try to pull updates
-        if ollama pull "$model_name" 2>&1 | tee /tmp/ollama_pull_${model_name//[:\/]/_}.log; then
+        local log_file
+        log_file=$(mktemp /tmp/ollama_pull_${model_name//[:\/]/_}.XXXXXX.log)
+        if ollama pull "$model_name" 2>&1 | tee "$log_file"; then
             log_success "Model $model_name is up to date"
+            # Optionally: rm -f "$log_file"
             return 0
         else
             log_warning "Failed to check updates for $model_name, but model exists locally"
+            # Optionally: rm -f "$log_file"
             return 0
         fi
     else
         log_info "Downloading model: $model_name"
         
         # Download the model
-        if ollama pull "$model_name" 2>&1 | tee /tmp/ollama_pull_${model_name//[:\/]/_}.log; then
+        local log_file
+        log_file=$(mktemp /tmp/ollama_pull_${model_name//[:\/]/_}.XXXXXX.log)
+        if ollama pull "$model_name" 2>&1 | tee "$log_file"; then
             log_success "Model $model_name downloaded successfully"
+            # Optionally: rm -f "$log_file"
             return 0
         else
             log_error "Failed to download model: $model_name"
+            # Optionally: rm -f "$log_file"
             return 1
         fi
     fi
