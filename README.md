@@ -6,6 +6,7 @@ A modular project to download and mirror critical knowledge (Kiwix, OpenZIM, Ope
 ## ✨ Features
 
 - **Multiple Data Sources**: Kiwix, OpenZIM, OpenStreetMap, Internet Archive (Software, Music, Movies, Texts)
+- **AI Models Storage**: Download and manage local AI models using Ollama for offline usage
 - **Modular Design**: Each source has its own script for easy maintenance
 - **Automatic Updates**: Schedule automatic resource updates with configurable frequency and resource selection
 - **Dynamic Mirror Management**: Auto-updated mirror lists every 24 hours via GitHub Actions
@@ -56,13 +57,16 @@ The optional automatic update setup will:
 # Download all sources to current directory (includes git repositories)
 ./emergency_storage.sh
 
-# Download all sources to external drive (includes git repositories)
+# Download all sources to external drive (includes git repositories and AI models)
 ./emergency_storage.sh /mnt/external_drive
 
 # Download specific source only
 ./emergency_storage.sh --kiwix /mnt/external_drive
 ./emergency_storage.sh --openzim /mnt/external_drive
 ./emergency_storage.sh --openstreetmap /mnt/external_drive
+
+# Download AI models using Ollama (installs Ollama if needed)
+./emergency_storage.sh --models /mnt/external_drive
 
 # Clone/update Git repositories only
 ./emergency_storage.sh --git /mnt/external_drive
@@ -75,6 +79,9 @@ python3 scripts/download_manual_sources.py
 
 # Clone/update Git repositories directly
 python3 scripts/download_git_repos.py
+
+# Download AI models directly
+./scripts/models.sh /mnt/external_drive
 
 # Show help
 ./emergency_storage.sh --help
@@ -122,6 +129,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 - **[Mirror System](docs/MIRROR_SYSTEM.md)** - Dynamic mirror management details
 - **[Manual Sources](docs/MANUAL_SOURCES.md)** - Configure manual download sources
 - **[Git Repositories](docs/GIT_REPOSITORIES.md)** - Clone and manage Git repositories in parallel
+- **[AI Models](docs/AI_MODELS.md)** - Download and manage local AI models using Ollama
 
 ## 📦 Available Data Sources
 
@@ -134,13 +142,14 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 | **IA Music** | 100GB-1TB | Music, podcasts, and live concerts |
 | **IA Movies** | 500GB-5TB | Public domain films and documentaries |
 | **IA Texts** | 100GB-2TB | Books, research papers, and academic texts |
+| **AI Models** | 5GB-500GB | Local AI models (LLMs, code assistants, embeddings) |
 
 **Recommended Storage**: 10-17TB+ for all sources
 
 ## 🛠️ Available Options
 
 ```bash
---all              # Download from all sources (default, includes git repositories)
+--all              # Download from all sources (default, includes git repositories and AI models)
 --kiwix            # Kiwix mirror only
 --openzim          # OpenZIM files only
 --openstreetmap    # OpenStreetMap data only
@@ -149,6 +158,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 --ia-movies        # Internet Archive movies only
 --ia-texts         # Internet Archive texts only
 --git              # Git repositories only
+--models           # AI models using Ollama (installs if needed)
 --manual-sources   # Manual JSON sources only (must be explicitly selected)
 ```
 
