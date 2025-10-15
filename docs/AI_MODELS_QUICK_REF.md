@@ -24,15 +24,6 @@ ollama run llama3.1
 ollama rm model-name:tag
 ```
 
-## Pre-configured Models
-
-| Category | Models | Default Size |
-|----------|--------|--------------|
-| **Reasoning** | deepseek-r1, deepseek-v3 | 7b, latest |
-| **General** | llama3.1, llama3.2, qwen2.5, mistral, mixtral, gemma2, phi3 | 8b, 3b, 7b, 7b, 8x7b, 9b, mini |
-| **Code** | codellama | 7b |
-| **Embeddings** | nomic-embed-text, mxbai-embed-large, all-minilm | latest, latest, l6-v2 |
-
 ## Configuration
 
 **File:** `data/Ollama.json`
