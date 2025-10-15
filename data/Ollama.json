@@ -2,23 +2,30 @@
   "models": {
     "deepseek-r1": {
       "name": "deepseek-r1",
-      "tags": ["1.5b", "7b", "8b", "14b", "32b", "70b"],
+      "tags": ["1.5b", "7b", "8b", "14b", "32b", "70b", "671b"],
       "description": "DeepSeek-R1 is a reasoning model with exceptional performance in math, code, and logical reasoning",
       "default_tag": "7b",
       "enabled": true
     },
-    "deepseek-v3": {
-      "name": "deepseek-v3",
-      "tags": ["latest"],
+    "deepseek-v3.1": {
+      "name": "deepseek-v3.1",
+      "tags": ["671b"],
       "description": "DeepSeek-V3 is a large Mixture-of-Experts (MoE) language model with 671B total parameters",
-      "default_tag": "latest",
+      "default_tag": "671b",
       "enabled": true
     },
-    "gemma2": {
-      "name": "gemma2",
-      "tags": ["2b", "9b", "27b"],
-      "description": "Google Gemma 2 models with improved performance and efficiency",
-      "default_tag": "9b",
+     "gpt-oss": {
+      "name": "gpt-oss",
+      "tags": ["20b", "120b"],
+      "description": "OpenAI’s open weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases",
+      "default_tag": "20b",
+      "enabled": true
+    },
+    "gemma3": {
+      "name": "gemma3",
+      "tags": ["270m", "1b", "4b", "12b", "27b"],
+      "description": "Google Gemma 3 models with improved performance and efficiency",
+      "default_tag": "4b",
       "enabled": true
     },
     "llama3.2": {
@@ -35,18 +42,18 @@
       "default_tag": "8b",
       "enabled": true
     },
-    "qwen2.5": {
-      "name": "qwen2.5",
-      "tags": ["0.5b", "1.5b", "3b", "7b", "14b", "32b", "72b"],
-      "description": "Alibaba's Qwen 2.5 models with strong multilingual support",
-      "default_tag": "7b",
+    "qwen3": {
+      "name": "qwen3",
+      "tags": ["0.6b", "1.7b", "4b", "8b", "14b", "30b", "32b", "235b"],
+      "description": "Qwen 3 models with strong multilingual support",
+      "default_tag": "8b",
       "enabled": true
     },
     "phi3": {
       "name": "phi3",
-      "tags": ["mini", "medium"],
+      "tags": ["3.8b", "14b"],
       "description": "Microsoft Phi-3 compact models optimized for efficiency",
-      "default_tag": "mini",
+      "default_tag": "3.8b",
       "enabled": true
     },
     "mistral": {
@@ -68,27 +75,6 @@
       "tags": ["7b", "13b", "34b", "70b"],
       "description": "Meta's Code Llama models specialized for programming tasks",
       "default_tag": "7b",
-      "enabled": true
-    },
-    "nomic-embed-text": {
-      "name": "nomic-embed-text",
-      "tags": ["latest"],
-      "description": "High-quality text embedding model for semantic search and RAG applications",
-      "default_tag": "latest",
-      "enabled": true
-    },
-    "mxbai-embed-large": {
-      "name": "mxbai-embed-large",
-      "tags": ["latest"],
-      "description": "Large embedding model optimized for retrieval tasks",
-      "default_tag": "latest",
-      "enabled": true
-    },
-    "all-minilm": {
-      "name": "all-minilm",
-      "tags": ["l6-v2"],
-      "description": "Compact sentence transformer for efficient embeddings",
-      "default_tag": "l6-v2",
       "enabled": true
     }
   },
