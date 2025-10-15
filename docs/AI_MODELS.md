@@ -22,7 +22,7 @@ The following model families are pre-configured and ready to download:
 | Model | Default Size | Description | Use Case |
 |-------|--------------|-------------|----------|
 | **deepseek-r1** | 7b | Reasoning model with exceptional performance in math, code, and logic | Complex problem solving, mathematical reasoning |
-| **deepseek-v3** | latest | Large Mixture-of-Experts (MoE) model with 671B parameters | Advanced language tasks, research |
+| **deepseek-v3.1** | latest | Large Mixture-of-Experts (MoE) model with 671B parameters | Advanced language tasks, research |
 | **llama3.1** | 8b | Meta's Llama 3.1 with enhanced multilingual capabilities | General-purpose language tasks |
 | **llama3.2** | 3b | Compact models optimized for edge deployment | Resource-constrained environments |
 | **qwen2.5** | 7b | Alibaba's model with strong multilingual support | Multilingual applications |
