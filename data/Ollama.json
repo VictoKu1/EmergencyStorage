@@ -1,0 +1,88 @@
+{
+  "models": {
+    "deepseek-r1": {
+      "name": "deepseek-r1",
+      "tags": ["1.5b", "7b", "8b", "14b", "32b", "70b", "671b"],
+      "description": "DeepSeek-R1 is a reasoning model with exceptional performance in math, code, and logical reasoning",
+      "default_tag": "7b",
+      "enabled": true
+    },
+    "deepseek-v3.1": {
+      "name": "deepseek-v3.1",
+      "tags": ["671b"],
+      "description": "DeepSeek-V3 is a large Mixture-of-Experts (MoE) language model with 671B total parameters",
+      "default_tag": "671b",
+      "enabled": true
+    },
+     "gpt-oss": {
+      "name": "gpt-oss",
+      "tags": ["20b", "120b"],
+      "description": "OpenAI’s open weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases",
+      "default_tag": "20b",
+      "enabled": true
+    },
+    "gemma3": {
+      "name": "gemma3",
+      "tags": ["270m", "1b", "4b", "12b", "27b"],
+      "description": "Google Gemma 3 models with improved performance and efficiency",
+      "default_tag": "4b",
+      "enabled": true
+    },
+    "llama3.2": {
+      "name": "llama3.2",
+      "tags": ["1b", "3b"],
+      "description": "Meta's Llama 3.2 compact models optimized for edge deployment",
+      "default_tag": "3b",
+      "enabled": true
+    },
+    "llama3.1": {
+      "name": "llama3.1",
+      "tags": ["8b", "70b", "405b"],
+      "description": "Meta's Llama 3.1 models with enhanced multilingual capabilities",
+      "default_tag": "8b",
+      "enabled": true
+    },
+    "qwen3": {
+      "name": "qwen3",
+      "tags": ["0.6b", "1.7b", "4b", "8b", "14b", "30b", "32b", "235b"],
+      "description": "Qwen 3 models with strong multilingual support",
+      "default_tag": "8b",
+      "enabled": true
+    },
+    "phi3": {
+      "name": "phi3",
+      "tags": ["3.8b", "14b"],
+      "description": "Microsoft Phi-3 compact models optimized for efficiency",
+      "default_tag": "3.8b",
+      "enabled": true
+    },
+    "mistral": {
+      "name": "mistral",
+      "tags": ["7b"],
+      "description": "Mistral AI's efficient 7B parameter model",
+      "default_tag": "7b",
+      "enabled": true
+    },
+    "mixtral": {
+      "name": "mixtral",
+      "tags": ["8x7b", "8x22b"],
+      "description": "Mistral AI's Mixture of Experts models",
+      "default_tag": "8x7b",
+      "enabled": true
+    },
+    "codellama": {
+      "name": "codellama",
+      "tags": ["7b", "13b", "34b", "70b"],
+      "description": "Meta's Code Llama models specialized for programming tasks",
+      "default_tag": "7b",
+      "enabled": true
+    }
+  },
+  "settings": {
+    "ollama_install_command": "curl -fsSL https://ollama.com/install.sh | sh",
+    "download_all_tags": false,
+    "check_for_updates": true,
+    "parallel_downloads": false,
+    "storage_path_suffix": "ai_models"
+  }
+}

@@ -4,7 +4,7 @@
 # This script coordinates multiple specialized download scripts for different data sources
 # 
 # Usage: ./emergency_storage.sh [--sources] [--allow_download_from_mirror] [drive_address]
-# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources, git
+# Sources: all, kiwix, openzim, openstreetmap, ia-software, ia-music, ia-movies, ia-texts, manual-sources, git, models
 
 set -e  # Exit on any error
 
@@ -34,6 +34,7 @@ show_usage() {
     echo "  --ia-movies      Download Internet Archive movies collection"
     echo "  --ia-texts       Download Internet Archive scientific texts"
     echo "  --git            Clone/update Git repositories from JSON configuration"
+    echo "  --models         Download AI models using Ollama (installs Ollama if needed)"
     echo "  --manual-sources Download from manually configured JSON sources (not part of --all)"
     echo ""
     echo -e "${COLOR_GREEN}Options:${COLOR_RESET}"
@@ -46,6 +47,7 @@ show_usage() {
     echo "  $0 /mnt/external_drive               # Download all to specified directory"
     echo "  $0 --kiwix /mnt/external_drive       # Download only Kiwix"
     echo "  $0 --openzim /mnt/external_drive     # Download only OpenZIM"
+    echo "  $0 --models /mnt/external_drive      # Download AI models using Ollama"
     echo "  $0 --manual-sources /mnt/external_drive  # Download from manual sources JSON"
     echo "  $0 --git /mnt/external_drive             # Clone/update Git repositories"
     echo "  $0 --kiwix --allow_download_from_mirror /mnt/external_drive"
@@ -59,6 +61,7 @@ show_usage() {
     echo "  IA Music:         100GB - 1TB"
     echo "  IA Movies:        500GB - 5TB"
     echo "  IA Texts:         100GB - 2TB"
+    echo "  AI Models:        5GB - 500GB (varies by model)"
     echo "  Recommended:      1TB+ free space"
     echo ""
 }
@@ -225,6 +228,14 @@ download_git_repos() {
     fi
 }
 
+# Function to download AI models using Ollama
+download_models() {
+    local drive_path="$1"
+    
+    log_info "Calling AI models download script..."
+    "$SCRIPT_DIR/scripts/models.sh" "$drive_path"
+}
+
 # Function to download from all sources
 download_all() {
     local drive_path="$1"
@@ -239,7 +250,7 @@ download_all() {
         return 1
     fi
     
-    local sources=("kiwix" "openzim" "openstreetmap" "ia-software" "ia-music" "ia-movies" "ia-texts" "git-repos")
+    local sources=("kiwix" "openzim" "openstreetmap" "ia-software" "ia-music" "ia-movies" "ia-texts" "git-repos" "models")
     local failed_sources=()
     
     for source in "${sources[@]}"; do
@@ -293,7 +304,7 @@ main() {
                 allow_mirrors="true"
                 shift
                 ;;
-            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git)
+            --all|--kiwix|--openzim|--openstreetmap|--ia-software|--ia-music|--ia-movies|--ia-texts|--manual-sources|--git|--models)
                 if [ -n "$source" ]; then
                     log_error "Multiple source options specified"
                     show_usage
@@ -386,6 +397,9 @@ main() {
             ;;
         --git)
             download_git_repos "$drive_path"
+            ;;
+        --models)
+            download_models "$drive_path"
             ;;
         *)
             log_error "Invalid source option $source"
