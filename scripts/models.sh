@@ -60,7 +60,7 @@ except Exception as e:
     log_info "Running installation command: $install_cmd"
     
     # Execute installation
-    if eval "$install_cmd"; then
+    if [ -n "$install_cmd" ] && bash -c "$install_cmd"; then
         log_success "Ollama installed successfully"
         return 0
     else
