@@ -28,7 +28,7 @@ The following model families are pre-configured and ready to download:
 | **qwen2.5** | 7b | Alibaba's model with strong multilingual support | Multilingual applications |
 | **mistral** | 7b | Efficient 7B parameter model | General-purpose, efficient inference |
 | **mixtral** | 8x7b | Mixture of Experts model | Complex tasks requiring specialized knowledge |
-| **gemma2** | 9b | Google's Gemma 2 with improved performance | Balanced performance and efficiency |
+| **gemma3** | 9b | Google's Gemma 3 with improved performance | Balanced performance and efficiency |
 | **phi3** | mini | Microsoft's compact efficient models | Edge computing, mobile deployment |
 
 ### Code Models
