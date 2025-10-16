@@ -137,28 +137,17 @@ echo
 
 # Test 8: Test get_models_from_config function
 echo "Test 8: Testing get_models_from_config function..."
-if python3 -c "
-import sys
-sys.path.insert(0, 'scripts')
-
-# Source the function from the script
-import subprocess
-result = subprocess.run(['bash', '-c', 'source scripts/models.sh && get_models_from_config'], 
-                       capture_output=True, text=True, cwd='$REPO_ROOT')
-
-if result.returncode == 0 and result.stdout.strip():
-    models = result.stdout.strip().split('\n')
-    print(f'✓ get_models_from_config returned {len(models)} model(s)')
-    for model in models[:3]:  # Show first 3 models
-        print(f'  - {model}')
-    sys.exit(0)
-else:
-    print('✗ get_models_from_config failed')
-    sys.exit(1)
-" 2>&1; then
+source scripts/models.sh
+models_output="$(get_models_from_config)"
+if [ -n "$models_output" ]; then
+    model_count=$(echo "$models_output" | wc -l)
+    echo "✓ get_models_from_config returned $model_count model(s)"
+    echo "$models_output" | head -n 3 | while read -r model; do
+        echo "  - $model"
+    done
     echo "✓ get_models_from_config works correctly"
 else
-    echo "✗ get_models_from_config test failed"
+    echo "✗ get_models_from_config failed"
     exit 1
 fi
 echo
