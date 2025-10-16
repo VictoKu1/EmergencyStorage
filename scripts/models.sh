@@ -92,7 +92,7 @@ ensure_ollama_service() {
         fi
     else
         log_warning "Ollama service is already running. You may need to restart it with OLLAMA_MODELS=$OLLAMA_MODELS"
-        log_info "To restart: killall ollama && OLLAMA_MODELS=$OLLAMA_MODELS ollama serve &"
+        log_info "To restart: pkill -f 'ollama serve' && OLLAMA_MODELS=$OLLAMA_MODELS ollama serve &"
     fi
 }
 
