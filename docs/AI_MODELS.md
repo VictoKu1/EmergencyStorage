@@ -4,6 +4,8 @@
 
 The AI Models functionality provides automatic installation and management of local AI models using [Ollama](https://ollama.com/). This feature enables you to download and store various open-source AI models for offline use, making them available for emergency situations or environments with limited internet connectivity.
 
+**Key Improvement for Raspberry Pi**: Models are automatically stored on your specified drive (e.g., external HDD) instead of the default system location, preventing SD card overflow. The generated helper script makes models portable across different PCs.
+
 ## Features
 
 - **Automatic Ollama Installation**: Automatically installs Ollama if not already present
@@ -12,6 +14,8 @@ The AI Models functionality provides automatic installation and management of lo
 - **Flexible Configuration**: JSON-based configuration for easy model management
 - **Storage Tracking**: Monitors and reports storage usage
 - **Integrated with Emergency Storage**: Works seamlessly with the `--all` flag
+- **External Storage Support**: Automatically stores models on specified drive to prevent system storage overflow
+- **Portable Across PCs**: Creates helper script for easy usage on any PC where the drive is connected
 
 ## Supported Models
 
@@ -224,9 +228,19 @@ ollama run llama3.1
 # Download models with all other sources
 ./emergency_storage.sh --all /mnt/external_drive
 
-# Use custom Ollama models directory
+# Use the portable helper script (created automatically)
+cd /mnt/external_drive/ai_models
+./run_ollama.sh
+
+# The helper script will:
+# - Automatically detect its location
+# - Set OLLAMA_MODELS correctly
+# - Start Ollama service if needed
+# - Provide instructions for usage
+
+# Manual setup (if needed)
 export OLLAMA_MODELS=/mnt/external_drive/ai_models
-./emergency_storage.sh --models /mnt/external_drive
+ollama serve &
 
 # Check specific model
 ollama pull deepseek-r1:7b
@@ -250,20 +264,47 @@ Model sizes vary significantly:
 
 ### Storage Location
 
+**Important**: EmergencyStorage automatically configures Ollama to store models on your target drive (e.g., external HDD) instead of the default system location. This prevents filling up your system storage and makes models portable across different PCs.
+
+When you run:
+```bash
+./emergency_storage.sh --models /mnt/external_drive
+```
+
+The script automatically:
+1. Creates `ai_models` directory on the target drive
+2. Sets `OLLAMA_MODELS=/mnt/external_drive/ai_models`
+3. Downloads all models to that location
+4. Creates a portable `run_ollama.sh` helper script
+
+#### Default Storage (without EmergencyStorage)
+
 By default, Ollama stores models in:
 - **Linux**: `~/.ollama/models`
 - **macOS**: `~/.ollama/models`
 - **Windows (WSL)**: `~/.ollama/models`
 
-#### Changing Storage Location
+#### Using Models on Any PC (Portable Usage)
+
+The script creates a helper script that makes your models portable:
 
 ```bash
-# Set custom storage location
-export OLLAMA_MODELS=/mnt/external_drive/ai_models
+# On any PC where the external drive is connected:
+cd /mnt/external_drive/ai_models
+./run_ollama.sh
 
-# Make it permanent (add to ~/.bashrc or ~/.profile)
-echo 'export OLLAMA_MODELS=/mnt/external_drive/ai_models' >> ~/.bashrc
+# Or manually:
+export OLLAMA_MODELS=/mnt/external_drive/ai_models
+ollama serve &
+ollama list
+ollama run llama3.1
 ```
+
+This allows you to:
+- Move the HDD between different PCs
+- Use models without reinstalling them
+- Keep all models on external storage
+- Avoid filling up system storage on Raspberry Pi
 
 ### Checking Storage Usage
 
@@ -366,10 +407,15 @@ ping ollama.com
 
 **Problem**: Downloads fail due to lack of space
 
+**Note**: EmergencyStorage automatically stores models on your target drive (e.g., external HDD), preventing system storage overflow. Models are stored in `/path/to/drive/ai_models`.
+
 **Solutions**:
 ```bash
-# Check available space
-df -h
+# Check available space on target drive
+df -h /mnt/external_drive
+
+# Check storage used by models
+du -sh /mnt/external_drive/ai_models
 
 # Remove unused models
 ollama rm unused-model
@@ -377,25 +423,28 @@ ollama rm unused-model
 # Disable large models in config
 # Edit data/Ollama.json and set "enabled": false for large models
 
-# Change storage location to larger drive
-export OLLAMA_MODELS=/path/to/larger/drive
+# Verify OLLAMA_MODELS is set correctly
+echo $OLLAMA_MODELS
+# Should show: /mnt/external_drive/ai_models
 ```
 
 #### Permission Errors
 
 **Problem**: Cannot write to models directory
 
+**Note**: EmergencyStorage automatically handles directory creation with proper permissions on your target drive.
+
 **Solutions**:
 ```bash
-# Check directory permissions
-ls -ld ~/.ollama/models
+# Check directory permissions on your target drive
+ls -ld /mnt/external_drive/ai_models
 
-# Fix permissions if needed
-chmod -R 755 ~/.ollama
+# Ensure you have write permissions on the drive
+touch /mnt/external_drive/test_write && rm /mnt/external_drive/test_write
 
-# Or change to a directory where you have permissions
-export OLLAMA_MODELS=/tmp/ollama_models
-mkdir -p $OLLAMA_MODELS
+# If using the run_ollama.sh helper script, it automatically handles paths
+cd /mnt/external_drive/ai_models
+./run_ollama.sh
 ```
 
 ### Verification
@@ -452,14 +501,54 @@ Or comment out the "models" entry in the sources array of `emergency_storage.sh`
 
 ## Best Practices
 
-### 1. Start Small
+### 1. Use External Storage (Recommended for Raspberry Pi)
+
+**Important for Raspberry Pi users**: Always specify an external drive to avoid filling up the SD card:
+
+```bash
+# Good: Models stored on external HDD
+./emergency_storage.sh --models /mnt/external_drive
+
+# Bad: Models stored on SD card (may cause overflow)
+./emergency_storage.sh --models .
+```
+
+The script automatically:
+- Creates `ai_models` directory on your target drive
+- Sets Ollama to use that location
+- Creates a portable `run_ollama.sh` helper script
+- Stores manifest and metadata
+
+### 2. Portable Setup Across PCs
+
+The generated `run_ollama.sh` script makes your models portable:
+
+```bash
+# On PC #1 (Download)
+./emergency_storage.sh --models /mnt/external_drive
+
+# Disconnect HDD and connect to PC #2
+# On PC #2 (Use)
+cd /mnt/external_drive/ai_models
+./run_ollama.sh  # Automatically configures paths
+
+# In a new terminal
+ollama list
+ollama run llama3.1
+```
+
+No need to reconfigure or re-download on each PC!
+
+### 3. Start Small
+
+### 3. Start Small
 
 Begin with smaller models to test your setup:
 - `phi3:mini` (1.9 GB)
 - `llama3.2:3b` (2 GB)
 - `mistral:7b` (4.1 GB)
 
-### 2. Plan Your Storage
+### 4. Plan Your Storage
 
 Before downloading:
 ```bash
@@ -470,7 +559,7 @@ df -h /mnt/external_drive
 # Review data/Ollama.json and calculate required space
 ```
 
-### 3. Use Update Checks
+### 5. Use Update Checks
 
 Regularly update models to get improvements:
 ```bash
@@ -478,7 +567,7 @@ Regularly update models to get improvements:
 ./emergency_storage.sh --models /mnt/external_drive
 ```
 
-### 4. Test Models After Download
+### 6. Test Models After Download
 
 Verify models work correctly:
 ```bash
@@ -486,14 +575,14 @@ ollama run model-name
 # Run a simple test query
 ```
 
-### 5. Backup Configuration
+### 7. Backup Configuration
 
 Keep a backup of your customized `data/Ollama.json`:
 ```bash
 cp data/Ollama.json data/Ollama.json.backup
 ```
 
-### 6. Document Your Setup
+### 8. Document Your Setup
 
 Keep notes about:
 - Which models you're using
