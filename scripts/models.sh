@@ -162,7 +162,8 @@ download_model() {
     
     # Ensure OLLAMA_MODELS is set (should be inherited from environment)
     if [ -z "$OLLAMA_MODELS" ]; then
-        log_warning "OLLAMA_MODELS not set, using default location"
+        OLLAMA_MODELS="$HOME/.ollama/models"
+        log_warning "OLLAMA_MODELS not set, using default location: $OLLAMA_MODELS"
     fi
     
     # Check if already downloaded
