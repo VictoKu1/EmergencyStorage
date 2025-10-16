@@ -71,12 +71,18 @@ except Exception as e:
 
 # Function to ensure Ollama service is running
 ensure_ollama_service() {
+    local models_dir="$1"
+    
     log_info "Checking Ollama service status..."
+    log_info "Models will be stored in: $models_dir"
+    
+    # Set OLLAMA_MODELS environment variable to specify storage location
+    export OLLAMA_MODELS="$models_dir"
     
     # Try to start Ollama in the background if not running
     if ! pgrep -x "ollama" > /dev/null; then
-        log_info "Starting Ollama service..."
-        ollama serve > /dev/null 2>&1 &
+        log_info "Starting Ollama service with OLLAMA_MODELS=$OLLAMA_MODELS..."
+        OLLAMA_MODELS="$models_dir" ollama serve > /dev/null 2>&1 &
         sleep 3
         
         if pgrep -x "ollama" > /dev/null; then
@@ -85,7 +91,8 @@ ensure_ollama_service() {
             log_warning "Could not verify Ollama service is running, but continuing anyway"
         fi
     else
-        log_success "Ollama service is already running"
+        log_warning "Ollama service is already running. You may need to restart it with OLLAMA_MODELS=$OLLAMA_MODELS"
+        log_info "To restart: pkill -f 'ollama serve' && OLLAMA_MODELS=$OLLAMA_MODELS ollama serve &"
     fi
 }
 
@@ -152,6 +159,12 @@ download_model() {
     local model_name="$1"
     
     log_info "Processing model: $model_name"
+    
+    # Ensure OLLAMA_MODELS is set (should be inherited from environment)
+    if [ -z "$OLLAMA_MODELS" ]; then
+        OLLAMA_MODELS="$HOME/.ollama/models"
+        log_warning "OLLAMA_MODELS not set, using default location: $OLLAMA_MODELS"
+    fi
     
     # Check if already downloaded
     if is_model_downloaded "$model_name"; then
@@ -257,24 +270,30 @@ list_models() {
 
 # Function to get storage information
 get_storage_info() {
-    local models_path
+    local models_path="$OLLAMA_MODELS"
     
-    # Ollama stores models in ~/.ollama/models by default
-    if [ -d "$HOME/.ollama/models" ]; then
-        models_path="$HOME/.ollama/models"
-    else
-        log_warning "Could not find Ollama models directory"
-        return 1
+    # If OLLAMA_MODELS is not set, try default location
+    if [ -z "$models_path" ]; then
+        if [ -d "$HOME/.ollama/models" ]; then
+            models_path="$HOME/.ollama/models"
+        else
+            log_warning "Could not find Ollama models directory"
+            return 1
+        fi
     fi
     
     log_info "Models storage location: $models_path"
     
-    # Calculate storage usage
-    local storage_used
-    storage_used=$(du -sh "$models_path" 2>/dev/null | cut -f1)
-    
-    if [ -n "$storage_used" ]; then
-        log_info "Storage used by models: $storage_used"
+    # Calculate storage usage if directory exists
+    if [ -d "$models_path" ]; then
+        local storage_used
+        storage_used=$(du -sh "$models_path" 2>/dev/null | cut -f1)
+        
+        if [ -n "$storage_used" ]; then
+            log_info "Storage used by models: $storage_used"
+        fi
+    else
+        log_info "Models directory will be created when first model is downloaded"
     fi
 }
 
@@ -293,6 +312,11 @@ download_ai_models() {
     log_info "Models directory: $models_dir"
     log_info ""
     
+    # Set OLLAMA_MODELS environment variable to the target directory
+    export OLLAMA_MODELS="$models_dir"
+    log_info "Setting OLLAMA_MODELS=$OLLAMA_MODELS"
+    log_info ""
+    
     # Check if Ollama is installed
     if ! check_ollama_installed; then
         log_info "Ollama needs to be installed"
@@ -305,8 +329,8 @@ download_ai_models() {
         log_info ""
     fi
     
-    # Ensure Ollama service is running
-    ensure_ollama_service
+    # Ensure Ollama service is running with correct OLLAMA_MODELS path
+    ensure_ollama_service "$models_dir"
     log_info ""
     
     # Download/update all models
@@ -330,16 +354,57 @@ download_ai_models() {
     {
         echo "AI Models Manifest"
         echo "Generated: $(date)"
+        echo "Storage Location: $models_dir"
         echo "========================================"
         echo ""
         ollama list 2>/dev/null || echo "Could not list models"
     } > "$manifest_file"
     
+    # Create a helper script to run Ollama with the correct path
+    local helper_script="$models_dir/run_ollama.sh"
+    log_info "Creating helper script: $helper_script"
+    cat > "$helper_script" << EOF
+#!/bin/bash
+# Helper script to run Ollama with models from this directory
+# This allows you to use the models on any PC where this drive is connected
+
+# Get the directory where this script is located
+MODELS_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+
+echo "Starting Ollama with models from: \$MODELS_DIR"
+export OLLAMA_MODELS="\$MODELS_DIR"
+
+# Start Ollama service if not already running
+if ! pgrep -x "ollama" > /dev/null; then
+    echo "Starting Ollama service..."
+    OLLAMA_MODELS="\$MODELS_DIR" ollama serve &
+    sleep 3
+    echo "Ollama service started"
+else
+    echo "Ollama is already running. To use models from this location:"
+    echo "  1. Stop the running Ollama: killall ollama"
+    echo "  2. Run this script again"
+fi
+
+echo ""
+echo "To use Ollama with these models, run commands in a new terminal:"
+echo "  export OLLAMA_MODELS=\$MODELS_DIR"
+echo "  ollama list"
+echo "  ollama run <model-name>"
+EOF
+    chmod +x "$helper_script"
+    
     log_success "AI models download completed!"
     log_info ""
-    log_info "Note: Ollama stores models in ~/.ollama/models by default"
-    log_info "To change the storage location, set the OLLAMA_MODELS environment variable"
-    log_info "Example: export OLLAMA_MODELS=$models_dir"
+    log_info "Models are stored in: $models_dir"
+    log_info ""
+    log_info "To use these models on this or any other PC:"
+    log_info "  1. Run: $helper_script"
+    log_info "  2. In a new terminal, run: export OLLAMA_MODELS=$models_dir"
+    log_info "  3. Then use: ollama list, ollama run <model>, etc."
+    log_info ""
+    log_info "Or manually set the environment variable:"
+    log_info "  export OLLAMA_MODELS=$models_dir"
     log_info ""
     
     return 0
