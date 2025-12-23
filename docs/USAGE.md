@@ -23,7 +23,7 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 
 ### Available Sources
 
-- `--all` - Download from all sources (default when no flags specified, includes git repositories, excludes manual-sources)
+- `--all` - Download from all sources (default when no flags specified, includes git repositories and AI models, excludes manual-sources)
 - `--kiwix` - Download Kiwix mirror only
 - `--openzim` - Download OpenZIM files only
 - `--openstreetmap` - Download OpenStreetMap data only
@@ -32,6 +32,7 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 - `--ia-movies` - Download Internet Archive movies collection only
 - `--ia-texts` - Download Internet Archive scientific texts only
 - `--git` - Clone/update Git repositories from JSON configuration
+- `--models` - Download AI models using Ollama (installs Ollama if needed)
 - `--manual-sources` - Download from manually configured JSON sources (must be selected explicitly, not part of --all)  
 
 ### Examples
@@ -70,7 +71,10 @@ The main `emergency_storage.sh` script coordinates all individual scripts and pr
 # Advanced: Clone/update Git repositories only
 ./emergency_storage.sh --git /mnt/external_drive
 
-# Advanced: Explicitly download everything to external drive (includes git repos)
+# Advanced: Download AI models only
+./emergency_storage.sh --models /mnt/external_drive
+
+# Advanced: Explicitly download everything to external drive (includes git repos and AI models)
 ./emergency_storage.sh --all /mnt/external_drive
 
 # Show help
@@ -93,6 +97,7 @@ chmod +x scripts/*.sh
 ./scripts/ia-music.sh /mnt/external_drive          # IA Music collection
 ./scripts/ia-movies.sh /mnt/external_drive         # IA Movies collection
 ./scripts/ia-texts.sh /mnt/external_drive          # IA Texts collection
+./scripts/models.sh /mnt/external_drive            # AI models using Ollama
 
 # Python scripts for Git repos and manual sources
 python3 scripts/download_git_repos.py --dest /mnt/external_drive/git_repos
