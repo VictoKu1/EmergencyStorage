@@ -54,6 +54,11 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Configuration templates
   - Common clone arguments
 
+- **[AI Models Quick Reference](AI_MODELS_QUICK_REF.md)** - Quick AI models management
+  - Quick commands
+  - Configuration examples
+  - Model sizes and troubleshooting
+
 ### Understanding the System
 
 - **[Architecture](ARCHITECTURE.md)** - System design and structure
@@ -78,6 +83,13 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
   - Configuration file structure
   - Operations (clone, update, both)
   - Error handling and logging
+
+- **[AI Models](AI_MODELS.md)** - Download and manage local AI models using Ollama
+  - Automatic Ollama installation
+  - Supported models and sizes
+  - Configuration and usage
+  - Storage management and portability
+  - Troubleshooting
 
 - **[Mirror System](MIRROR_SYSTEM.md)** - Dynamic mirror management
   - How automatic mirror updates work
@@ -141,6 +153,9 @@ Welcome to the comprehensive documentation for EmergencyStorage! This documentat
 
 **...manage Git repositories**
 → Read [Git Repositories](GIT_REPOSITORIES.md) or [Quick Reference](GIT_REPOSITORIES_QUICK_REF.md)
+
+**...download and use AI models offline**
+→ Read [AI Models](AI_MODELS.md) or [Quick Reference](AI_MODELS_QUICK_REF.md)
 
 ## 📝 Additional Resources
 
