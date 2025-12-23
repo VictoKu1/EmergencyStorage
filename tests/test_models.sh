@@ -35,7 +35,7 @@ with open('data/Ollama.json', 'r') as f:
     assert isinstance(data['models'], dict), 'models must be a dictionary'
     assert isinstance(data['settings'], dict), 'settings must be a dictionary'
     print(f'✓ JSON structure valid')
-    print(f'  - Total models: {len(data["models"])}')
+    print(f'  - Total models: {len(data[\"models\"])}')
 " 2>&1; then
     echo "✓ JSON validation passed"
 else

@@ -1,0 +1,37 @@
+name: "Feature request"
+description: "Suggest an idea or new data source"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Tell us how this helps offline preparedness.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: "Add mirror support for new dataset"
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why is this useful?
+      placeholder: "Helps schools keep educational content updated offline."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      placeholder: "Add a new script using the existing template; schedule weekly updates."
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: "Manual download instructions, other data sources, etc."
+  - type: input
+    id: extra
+    attributes:
+      label: Related docs or references
+      placeholder: "Links to mirrors, dataset docs, or prior art"
