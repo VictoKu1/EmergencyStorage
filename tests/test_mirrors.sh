@@ -4,7 +4,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 echo "========================================"
 echo "Testing Dynamic Mirror System"
@@ -13,7 +14,7 @@ echo
 
 # Test 1: Check if JSON file exists
 echo "Test 1: Checking if kiwix.json exists..."
-if [ -f "data/mirrors/kiwix.json" ]; then
+if [ -f "$REPO_ROOT/data/mirrors/kiwix.json" ]; then
     echo "✓ kiwix.json exists"
 else
     echo "✗ kiwix.json not found"

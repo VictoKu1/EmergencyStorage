@@ -1,11 +1,34 @@
 # EmergencyStorage
 
-A modular project to download and mirror critical knowledge (Kiwix, OpenZIM, OpenStreetMap, Wikipedia, Git Reposiotries etc.....) from multiple sources for emergency preparedness. Designed for Raspberry Pi or any Linux PC with external storage
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="EmergencyStorage banner" width="100%" />
+</p>
 
+<p align="center">
+  <a href="https://github.com/VictoKu1/EmergencyStorage/actions/workflows/ci.yml?query=branch%3Amain">
+    <img src="https://img.shields.io/github/actions/workflow/status/VictoKu1/EmergencyStorage/ci.yml?branch=main&label=CI+%2B+tests" alt="CI status" />
+  </a>
+  <a href="https://github.com/VictoKu1/EmergencyStorage/actions/workflows/update-mirrors.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/VictoKu1/EmergencyStorage/update-mirrors.yml?label=Mirrors" alt="Mirror updater status" />
+  </a>
+  <a href="https://github.com/VictoKu1/EmergencyStorage/releases">
+    <img src="https://img.shields.io/github/v/release/VictoKu1/EmergencyStorage?display_name=tag" alt="Latest release" />
+  </a>
+  <a href="https://github.com/VictoKu1/EmergencyStorage/commits">
+    <img src="https://img.shields.io/github/last-commit/VictoKu1/EmergencyStorage" alt="Last commit" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/VictoKu1/EmergencyStorage" alt="License" />
+  </a>
+</p>
 
-## ✨ Features
+> **Project status:** Active maintenance — focused on reliable, offline-first mirroring for preparedness scenarios.
 
-- **Multiple Data Sources**: Kiwix, OpenZIM, OpenStreetMap, Internet Archive (Software, Music, Movies, Texts)
+EmergencyStorage is a modular toolkit that mirrors critical knowledge (Kiwix, OpenZIM, OpenStreetMap, Internet Archive collections, Git repositories, and Ollama models) onto external storage. It is built for Raspberry Pi or any Linux PC so communities can keep learning, mapping, and AI assistance available when connectivity is down.
+
+## ✨ Key Features
+
+- **Multiple Data Sources**: Kiwix, OpenZIM, OpenStreetMap, Internet Archive (software, music, movies, texts)
 - **AI Models Storage**: Download and manage local AI models using Ollama for offline usage
 - **Modular Design**: Each source has its own script for easy maintenance
 - **Automatic Updates**: Schedule automatic resource updates with configurable frequency and resource selection
@@ -16,6 +39,10 @@ A modular project to download and mirror critical knowledge (Kiwix, OpenZIM, Ope
 - **Flexible Usage**: Download all sources or select specific ones
 - **Resume Support**: Picks up where it left off if interrupted
 
+## 🎥 Visual Demo
+
+![Terminal demo showing one-command sync](docs/assets/demo-terminal.svg)
+
 ## 🚀 Quick Start
 
 ### Recommended Hardware
@@ -23,10 +50,9 @@ A modular project to download and mirror critical knowledge (Kiwix, OpenZIM, Ope
 **Raspberry Pi**: Raspberry Pi 5 (recommended) or Raspberry Pi 4 Model B (4GB+)  
 **Storage**: 15TB+ external HDD with USB 3.0 dock or SATA HAT  
 **Power**: Official power supply for Pi; independent power for drives  
-**Cooling**: Heatsink and fan recommended for sustained I/O operations
+**Cooling**: Heatsink and fan recommended for sustained I/O operations  
+See **[Hardware Guide](docs/HARDWARE.md)** for detailed specifications.
 
-See **[Hardware Guide](docs/HARDWARE.md)** for detailed specifications, compatibility notes, and vendor references
-  
 ### Installation
 
 ```bash
@@ -89,8 +115,6 @@ python3 scripts/download_git_repos.py
 
 ### Automatic Updates
 
-Set up automatic resource updates that persist through system restarts:
-
 ```bash
 # Run the automated setup (one-time)
 ./scripts/setup_auto_update.sh
@@ -112,6 +136,16 @@ The setup script configures systemd timers that:
 - ✅ Catch up on missed runs if system was off
 
 See [Automatic Updates Documentation](docs/AUTO_UPDATE.md) for more details.
+
+## ⚙️ Configuration
+
+- **Storage target**: Pass the destination path to `emergency_storage.sh` (defaults to current directory).
+- **Auto-update settings**: `data/auto_update_config.json` controls resources, schedules, and global behaviors used by `scripts/auto_update.py`.
+- **Manual sources**: `data/manual_sources.json` defines custom URLs and commands for `--manual-sources` runs.
+- **Git repositories**: `data/git_repositories.json` lists repos cloned by `--git` or the default `--all` mode.
+- **AI models**: `data/Ollama.json` lists available models; `scripts/models.sh` sets the `OLLAMA_MODELS` path automatically.
+- **Mirrors**: `data/mirrors/kiwix.json` is refreshed by GitHub Actions to keep Kiwix endpoints current.
+- **Environment**: The scripts rely on standard Linux tools (curl, rsync, wget, python3). Optional `shellcheck` is useful for linting contributors.
 
 ## 📖 Documentation
 
@@ -162,13 +196,26 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 --manual-sources   # Manual JSON sources only (must be explicitly selected)
 ```
 
+## 🗺️ Roadmap
+
+- Publish tagged releases with changelog updates (SemVer) and downloadable artifacts.
+- Add optional Docker image for quick evaluation on desktop servers.
+- Expand example configurations for education- and health-focused bundles.
+- Continue growing mirror lists and validation to keep downloads resilient.
+
+## 📦 Versioning & Releases
+
+- Uses **Semantic Versioning (SemVer)** for tagged releases.
+- Release notes are tracked in [CHANGELOG.md](CHANGELOG.md); pre-1.0 releases may group breaking changes together.
+- GitHub Releases will host packaged artifacts as they become available.
+
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
-- How to add new data sources using our template system
-- Development setup and workflow
-- Code style guidelines
-- Pull request process
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting PRs or issues.
+
+## 🔒 Security
+
+Please review [SECURITY.md](SECURITY.md) for vulnerability reporting guidance. If you discover a potential issue, contact the maintainers privately before opening a public issue.
 
 ## 📄 License
 
@@ -177,10 +224,3 @@ MIT License - see [LICENSE](LICENSE) file for details
 ---
 
 **Need Help?** Check the [documentation](docs/) or [open an issue](https://github.com/VictoKu1/EmergencyStorage/issues)
-
-
-
-
-
-
-
