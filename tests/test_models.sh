@@ -25,7 +25,7 @@ echo
 
 # Test 2: Validate JSON structure
 echo "Test 2: Validating JSON structure..."
-if python3 -c "
+if python3 - <<'PY' 2>&1; then
 import json
 with open('data/Ollama.json', 'r') as f:
     data = json.load(f)
@@ -35,8 +35,8 @@ with open('data/Ollama.json', 'r') as f:
     assert isinstance(data['models'], dict), 'models must be a dictionary'
     assert isinstance(data['settings'], dict), 'settings must be a dictionary'
     print(f'✓ JSON structure valid')
-    print(f'  - Total models: {len(data[\"models\"])}')
-" 2>&1; then
+    print(f"  - Total models: {len(data['models'])}")
+PY
     echo "✓ JSON validation passed"
 else
     echo "✗ JSON validation failed"

@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-- **Private reports:** Email the maintainers at `security@victo.ku` with a clear description of the issue, steps to reproduce, and any potential impact. We prefer coordinated disclosure and will acknowledge receipt within 3 business days.
+- **Private reports:** Email the maintainers at `security@emergencystorage.dev` with a clear description of the issue, steps to reproduce, and any potential impact. We prefer coordinated disclosure and will acknowledge receipt within 3 business days.
 - **GitHub Security Advisories:** If preferred, open a private security advisory via GitHub so we can coordinate a fix and release.
 - **Do not open public issues** for vulnerabilities until we have confirmed and patched the problem.
 
