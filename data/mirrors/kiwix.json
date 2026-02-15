@@ -1,6 +1,6 @@
 {
   "source": "kiwix",
-  "last_updated": "2026-02-08T01:00:35.849984Z",
+  "last_updated": "2026-02-15T00:52:21.033740Z",
   "mirrors": {
     "rsync": [
       "mirror-sites-in.mblibrary.info/download.kiwix.org/",
@@ -14,7 +14,6 @@
       "mirror-sites-ca.mblibrary.info/download.kiwix.org/",
       "ny.mirror.driftle.ss/kiwix/",
       "wi.mirror.driftle.ss/kiwix/",
-      "mirror.triplebit.org/download.kiwix.org/",
       "ftpmirror.your.org/pub/kiwix/"
     ],
     "ftp": [
@@ -48,8 +47,6 @@
       "https://driftle.ss/",
       "https://ny.mirror.driftle.ss/kiwix/",
       "https://wi.mirror.driftle.ss/kiwix/",
-      "https://www.triplebit.org/",
-      "https://mirror.triplebit.org/download.kiwix.org/",
       "https://wikimedia.org",
       "https://dumps.wikimedia.org/kiwix/",
       "https://your.org",
